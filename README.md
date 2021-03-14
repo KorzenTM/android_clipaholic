@@ -5,7 +5,7 @@
 * [Technologies](#technologies)
 * [Features](#features)
 * [Illustrations](#illustrations)
-* [Setup](#setup)
+* [Roadmap](#roadmap)
 
 ## General info
 The app will allow you to download videos in the format of your choice to the location you specify and optionally convert them to the music format of your choice. Initially it will support services such as YouTube, Facebook, Vimeo. It will be possible to create an account that will store the download history. Before downloading you will be able to watch a movie in the application and view information about it (title, description, views).
