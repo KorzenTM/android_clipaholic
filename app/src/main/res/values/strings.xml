@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Movie_Downloader</string>
+    <string name="app_name">Clipaholic</string>
+    <string name="new_user_information"><u>New user? Register now</u></string>
 </resources>

@@ -1,8 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
-</LinearLayout>
+    android:background="#1E90FF">
+
+
+    <TextView
+        android:id="@+id/hello_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15sp"
+        android:text="Get on\nBoard!\nRegister\nnow."
+        android:textSize="50sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:layout_toEndOf="@id/hello_text_view"
+        android:layout_marginTop="100sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleX="3"
+        android:scaleY="3"
+        android:src="@drawable/register_icon"/>
+
+    <RelativeLayout
+        android:background="@drawable/relative_layout_rounded_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hello_text_view"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:layout_margin="10sp">
+
+        <TextView
+            android:id="@+id/hello"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="#4169E1"
+            android:layout_margin="8sp"
+            android:text="Please fill out the form"/>
+
+        <EditText
+            android:id="@+id/nick"
+            android:layout_below="@id/hello"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="User name"/>
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_below="@id/nick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"/>
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_below="@id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Password" />
+
+        <TextView
+            android:id="@+id/infor_about_password"
+            android:layout_below="@id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="#4169E1"
+            android:text="Your password should meet the following requirements:\n- 8 characters minimum.\n- At least one uppercase and one lowercase letter.\n- At least one number and a special character."/>
+
+        <EditText
+            android:id="@+id/repeat_password"
+            android:layout_below="@id/infor_about_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Repeat password" />
+
+        <Button
+            android:id="@+id/register_button"
+            android:width="250sp"
+            android:layout_margin="10sp"
+            android:backgroundTint="#2E8B57"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/repeat_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REGISTER"/>
+
+    </RelativeLayout>
+</RelativeLayout>

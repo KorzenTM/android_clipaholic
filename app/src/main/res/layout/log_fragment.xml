@@ -21,12 +21,12 @@
 
     <ImageView
         android:layout_toEndOf="@id/hello_text_view"
-        android:layout_marginTop="70sp"
+        android:layout_marginTop="50sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleX="3"
-        android:scaleY="3"
-        android:src="@drawable/login_icon"/>
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@mipmap/login_icon_foreground"/>
 
     <RelativeLayout
         android:background="@drawable/relative_layout_rounded_background"
@@ -37,8 +37,20 @@
         android:gravity="center"
         android:layout_margin="10sp">
 
+        <TextView
+            android:id="@+id/welcome_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Welcome!"
+            android:layout_margin="8sp"
+            android:textStyle="bold"
+            android:textColor="#4169E1"
+            android:textSize="40sp"/>
+
         <EditText
             android:id="@+id/email_field"
+            android:layout_below="@id/welcome_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"/>
@@ -68,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/login_button"
-            android:text="New user? Register now"
+            android:text="@string/new_user_information"
             android:layout_centerHorizontal="true"
             android:textStyle="bold"
             android:textColor="#4169E1"/>
@@ -90,20 +102,29 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/google_login_btn"
+            android:id="@+id/google_login_button"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/line2"
+            android:layout_marginLeft="8sp"
+            android:layout_toRightOf="@id/placeholder"
             android:src="@drawable/google_icon"
-
             android:background="?android:selectableItemBackground"/>
 
+        <TextView
+            android:id="@+id/placeholder"
+            android:layout_below="@id/line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
         <ImageButton
-            android:id="@+id/facebook_login_btn"
-            android:layout_below="@id/google_login_btn"
-            android:layout_margin="8sp"
+            android:id="@+id/facebook_login_button"
+            android:layout_below="@id/line2"
+            android:layout_toLeftOf="@id/placeholder"
             android:layout_centerHorizontal="true"
+            android:layout_marginRight="8sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/facebook_icon"
