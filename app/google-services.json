@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "667066757603",
+    "project_id": "clipaholic-77208",
+    "storage_bucket": "clipaholic-77208.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667066757603:android:8fa85f23ddc394707df0d6",
+        "android_client_info": {
+          "package_name": "pl.edu.pum.movie_downloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667066757603-92m9uvl5psrlekmqbam85heoer59c9kj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk1azLe3s0JkDcJ3rHqglckDtDiUHaSPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667066757603-92m9uvl5psrlekmqbam85heoer59c9kj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
