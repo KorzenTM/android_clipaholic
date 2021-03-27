@@ -1,10 +1,12 @@
-package pl.edu.pum.movie_downloader;
+package pl.edu.pum.movie_downloader.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity
+import pl.edu.pum.movie_downloader.R;
+
+public class NavHostActivity extends AppCompatActivity
 {
 
     @Override

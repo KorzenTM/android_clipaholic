@@ -1,10 +1,14 @@
-package pl.edu.pum.movie_downloader;
+package pl.edu.pum.movie_downloader.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import com.google.firebase.auth.FirebaseUser;
+
+import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 
 public class SplashActivity extends AppCompatActivity
 {
@@ -23,7 +27,7 @@ public class SplashActivity extends AppCompatActivity
         {
             if(!isFinishing())
             {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), NavHostActivity.class));
                 finish();
             }
         }
@@ -33,7 +37,7 @@ public class SplashActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        mHandler.postDelayed(runnable, 2000);
+        mHandler.postDelayed(runnable, 200);
     }
 
     @Override

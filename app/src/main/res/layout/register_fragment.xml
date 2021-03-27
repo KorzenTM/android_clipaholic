@@ -97,5 +97,15 @@
             android:layout_height="wrap_content"
             android:text="REGISTER"/>
 
+        <ProgressBar
+            android:id="@+id/wait_for_register_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/repeat_password"
+            android:indeterminate="true"
+            android:visibility="invisible"/>
+
     </RelativeLayout>
 </RelativeLayout>

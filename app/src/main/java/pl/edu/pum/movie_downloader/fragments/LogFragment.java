@@ -1,4 +1,4 @@
-package pl.edu.pum.movie_downloader;
+package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -11,12 +11,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
+
+import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 
 public class LogFragment extends Fragment
 {
@@ -26,6 +35,8 @@ public class LogFragment extends Fragment
     private EditText mPasswordEditText;
     private ImageButton mGoogleSignImageButton;
     private ImageButton mFacebookSignImageButton;
+    private ProgressBar mLoginProgressBar;
+    private final FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -45,6 +56,7 @@ public class LogFragment extends Fragment
         mPasswordEditText = view.findViewById(R.id.password_field);
         mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
         mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
+        mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
 
 
         mLogInButton.setOnClickListener(new View.OnClickListener()
@@ -52,7 +64,35 @@ public class LogFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                //TODO log in Firebase
+                String email = mEmailEditText.getText().toString();
+                String password = mPasswordEditText.getText().toString();
+
+                if (email.isEmpty() || password.isEmpty())
+                {
+                    Toast.makeText(
+                            getContext(),
+                            "You have not entered your email or password."
+                            , Toast.LENGTH_LONG)
+                            .show();
+                }
+                else
+                {
+                    mLogInButton.setVisibility(View.INVISIBLE);
+                    mLoginProgressBar.setVisibility(View.VISIBLE);
+                    Runnable runnable = () ->
+                    {
+                        fireBaseAuthHandler.loginUserAccount(email, password);
+                    };
+                    Thread t1 = new Thread(runnable);
+                    t1.start();
+
+                    FirebaseUser currentUser = FireBaseAuthHandler.getAuthorization().getCurrentUser();
+                    while (currentUser == null) //wait for login succesfull
+                    {
+                        currentUser = FireBaseAuthHandler.getAuthorization().getCurrentUser(); //check again
+                    }
+                    Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
+                }
             }
         });
 
@@ -137,5 +177,13 @@ public class LogFragment extends Fragment
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mLoginProgressBar.setVisibility(View.INVISIBLE);
+        mLogInButton.setVisibility(View.VISIBLE);
     }
 }
