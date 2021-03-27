@@ -1,6 +1,8 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,9 +22,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
@@ -37,6 +43,7 @@ public class LogFragment extends Fragment
     private ImageButton mFacebookSignImageButton;
     private ProgressBar mLoginProgressBar;
     private final FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -58,7 +65,6 @@ public class LogFragment extends Fragment
         mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
         mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
 
-
         mLogInButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -79,19 +85,37 @@ public class LogFragment extends Fragment
                 {
                     mLogInButton.setVisibility(View.INVISIBLE);
                     mLoginProgressBar.setVisibility(View.VISIBLE);
-                    Runnable runnable = () ->
-                    {
-                        fireBaseAuthHandler.loginUserAccount(email, password);
-                    };
-                    Thread t1 = new Thread(runnable);
-                    t1.start();
 
-                    FirebaseUser currentUser = FireBaseAuthHandler.getAuthorization().getCurrentUser();
-                    while (currentUser == null) //wait for login succesfull
+                    FirebaseAuth firebaseAuth = FireBaseAuthHandler.getAuthorization();
+                    firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
                     {
-                        currentUser = FireBaseAuthHandler.getAuthorization().getCurrentUser(); //check again
-                    }
-                    Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task)
+                        {
+                            if (task.isSuccessful())
+                            {
+                                Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
+                            }
+                            else
+                            {
+                                mLoginProgressBar.setVisibility(View.INVISIBLE);
+                                mLogInButton.setVisibility(View.VISIBLE);
+                                AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+                                alertDialog.setTitle("Login failure");
+                                alertDialog.setMessage("An error occurred during sign in.\n" +
+                                        "Please check your login details or try again later.");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener()
+                                        {
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -178,6 +202,8 @@ public class LogFragment extends Fragment
             }
         });
     }
+
+
 
     @Override
     public void onResume()

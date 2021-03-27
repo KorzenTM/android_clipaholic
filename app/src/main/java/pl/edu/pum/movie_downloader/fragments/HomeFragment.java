@@ -21,8 +21,8 @@ import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 
 public class HomeFragment extends Fragment
 {
-    private  FireBaseAuthHandler fireBaseAuthHandler;
-    private  FirebaseUser currentUser;
+    private FireBaseAuthHandler fireBaseAuthHandler;
+    private FirebaseUser currentUser;
     private TextView mHelloUserTextView;
     private Button mLogOutButton;
 

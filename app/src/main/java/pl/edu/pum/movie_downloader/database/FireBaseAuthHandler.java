@@ -3,23 +3,24 @@ package pl.edu.pum.movie_downloader.database;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import pl.edu.pum.movie_downloader.fragments.HomeFragment;
-import pl.edu.pum.movie_downloader.fragments.LogFragment;
-import pl.edu.pum.movie_downloader.fragments.RegisterFragment;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 
 public final class FireBaseAuthHandler
 {
     private static final String TAG = "EmailPassword";
     private static FireBaseAuthHandler instance;
+    public static boolean isDone;
     private final FirebaseAuth mAuth;
 
     private FireBaseAuthHandler()
@@ -40,47 +41,6 @@ public final class FireBaseAuthHandler
     {
         return FirebaseAuth.getInstance();
     }
-
-    public void registerNewUser(final String email, final String password)
-    {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener( new OnCompleteListener<AuthResult>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
-                    {
-                        if (task.isSuccessful())
-                        {
-                            Log.d(TAG, "createUserWithEmail:success");
-                        }
-                        else
-                        {
-                            Log.d(TAG, "createUserWithEmail:failure", task.getException());
-                        }
-                    }
-                });
-    }
-
-    public void loginUserAccount(final String email, final String password)
-    {
-        mAuth.
-                signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
-                    {
-                        if (task.isSuccessful())
-                        {
-                            Log.d(TAG, "signInWithEmail:succes");
-                        }
-                        else
-                        {
-                            Log.d(TAG, "signInWithEmail:failure", task.getException());
-                        }
-                    }
-                });
-    };
 
     public void logOutUserAccount()
     {
