@@ -22,19 +22,18 @@
     <ImageView
         android:layout_toEndOf="@id/hello_text_view"
         android:layout_marginTop="50sp"
+        android:layout_marginEnd="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleX="2"
         android:scaleY="2"
-        android:src="@mipmap/login_icon_foreground"/>
+        app:srcCompat="@mipmap/login_icon_foreground"/>
 
     <RelativeLayout
         android:background="@drawable/relative_layout_rounded_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/hello_text_view"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
         android:layout_margin="10sp">
 
         <TextView
@@ -63,13 +62,23 @@
             android:inputType="textPassword"
             android:hint="Password" />
 
+        <TextView
+            android:id="@+id/forgot_password_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/password_field"
+            android:layout_margin="5sp"
+            android:text="Forgot your password?"
+            android:textStyle="bold"
+            android:textColor="#4169E1"/>
+
         <Button
             android:id="@+id/login_button"
             android:width="250sp"
             android:layout_margin="10sp"
             android:backgroundTint="#2E8B57"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/password_field"
+            android:layout_below="@id/forgot_password_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LOG IN"/>
@@ -119,7 +128,7 @@
             android:layout_below="@id/line2"
             android:layout_marginLeft="8sp"
             android:layout_toRightOf="@id/placeholder"
-            android:src="@drawable/google_icon"
+            app:srcCompat="@drawable/google_icon"
             android:background="?android:selectableItemBackground"/>
 
         <TextView
@@ -137,7 +146,7 @@
             android:layout_marginRight="8sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/facebook_icon"
+            app:srcCompat="@drawable/facebook_icon"
             android:background="?android:selectableItemBackground"
             android:scaleX="1.25"
             android:scaleY="1.25"
