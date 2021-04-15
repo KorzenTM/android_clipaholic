@@ -21,10 +21,9 @@ import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 
 public class HomeFragment extends Fragment
 {
-    private FireBaseAuthHandler fireBaseAuthHandler;
-    private FirebaseUser currentUser;
     private TextView mHelloUserTextView;
     private Button mLogOutButton;
+    FirebaseUser mCurrentUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -41,8 +40,8 @@ public class HomeFragment extends Fragment
         mHelloUserTextView = view.findViewById(R.id.hello_user_text_view);
         mLogOutButton = view.findViewById(R.id.log_out_button);
 
-        fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
-        currentUser = FireBaseAuthHandler.getAuthorization().getCurrentUser();
+        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+        mCurrentUser = fireBaseAuthHandler.getAuthorization().getCurrentUser();
 
         mLogOutButton.setOnClickListener(new View.OnClickListener()
         {
@@ -62,6 +61,6 @@ public class HomeFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        mHelloUserTextView.setText("Hello " + currentUser.getEmail());
+        mHelloUserTextView.setText("Hello " + mCurrentUser.getEmail());
     }
 }

@@ -6,13 +6,18 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -27,13 +32,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.models.User;
 
 public class RegisterFragment extends Fragment
 {
@@ -43,7 +48,7 @@ public class RegisterFragment extends Fragment
     private EditText mRepeatedPasswordEditText;
     private Button mRegisterButton;
     private ProgressBar mRegisterProgressBar;
-    private final FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+    private CheckBox mShowPasswordsCheckBox;
     private static final int PASSWORD_LENGTH = 8;
     List<EditText> mForm = new ArrayList<EditText>();
 
@@ -65,10 +70,10 @@ public class RegisterFragment extends Fragment
         mRepeatedPasswordEditText = view.findViewById(R.id.repeat_password);
         mRegisterButton = view.findViewById(R.id.register_button);
         mRegisterProgressBar = view.findViewById(R.id.wait_for_register_bar);
+        mShowPasswordsCheckBox = view.findViewById(R.id.show_passwords_checkbox);
 
         //get all EditText from register form
         RelativeLayout layout = view.findViewById(R.id.register_form_layout);
-        Drawable default_edit_text_theme;
         for (int i = 0; i < layout.getChildCount(); i++)
         {
             if (layout.getChildAt(i) instanceof EditText)
@@ -84,6 +89,7 @@ public class RegisterFragment extends Fragment
             @Override
             public void onClick(View v)
             {
+                String nickname = mNickEditView.getText().toString();
                 String email = mEmailEditText.getText().toString();
                 String password = mPasswordEditText.getText().toString();
                 String repeatedPassword = mRepeatedPasswordEditText.getText().toString();
@@ -95,18 +101,28 @@ public class RegisterFragment extends Fragment
                         setPasswordFieldState("Correct password", 0);
                         mRegisterButton.setVisibility(View.INVISIBLE);
                         mRegisterProgressBar.setVisibility(View.VISIBLE);
-                        FirebaseAuth firebaseAuth = FireBaseAuthHandler.getAuthorization();
-                        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
+
+                        User newUser = new User(nickname, email, password);
+                        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+                        FirebaseAuth firebaseAuth = fireBaseAuthHandler.getAuthorization();
+
+                        firebaseAuth.createUserWithEmailAndPassword(newUser.getUserEmail(),
+                                                                    newUser.getUserPassword()).
+                                addOnCompleteListener(new OnCompleteListener<AuthResult>()
                         {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task)
                             {
                                 if (task.isSuccessful())
                                 {
+                                    Log.d("User register status", "New account registration successful");
+                                    Toast.makeText(getContext(), "An account has been created. Welcome!", Toast.LENGTH_LONG).show();
+                                    firebaseAuth.signOut();
                                     Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_logFragment);
                                 }
                                 else
                                 {
+                                    Log.d("User register status", "New account registration unsuccessful");
                                     mRegisterButton.setVisibility(View.VISIBLE);
                                     mRegisterProgressBar.setVisibility(View.INVISIBLE);
                                     AlertDialog alertDialog = new AlertDialog.Builder(getContext(), R.drawable.rounded_corners).create();
@@ -129,11 +145,29 @@ public class RegisterFragment extends Fragment
                 }
             }
         });
+
+        mShowPasswordsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if (buttonView.isChecked())
+                {
+                    mPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    mRepeatedPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                else
+                {
+                    mPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    mRepeatedPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
         return view;
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void addClearButton(List<EditText> form)
+    private void addClearButton(List<EditText> form)
     {
         Drawable default_edit_text_theme = mForm.get(0).getBackground(); //just handle default theme of edittext to change
         for (EditText edt: form)

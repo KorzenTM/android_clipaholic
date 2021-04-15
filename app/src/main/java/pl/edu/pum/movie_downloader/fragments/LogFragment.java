@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,8 +29,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 
@@ -42,8 +41,6 @@ public class LogFragment extends Fragment
     private ImageButton mGoogleSignImageButton;
     private ImageButton mFacebookSignImageButton;
     private ProgressBar mLoginProgressBar;
-    private final FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -86,7 +83,7 @@ public class LogFragment extends Fragment
                     mLogInButton.setVisibility(View.INVISIBLE);
                     mLoginProgressBar.setVisibility(View.VISIBLE);
 
-                    FirebaseAuth firebaseAuth = FireBaseAuthHandler.getAuthorization();
+                    FirebaseAuth firebaseAuth = FireBaseAuthHandler.getInstance().getAuthorization();
                     firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
                     {
                         @Override
@@ -94,10 +91,12 @@ public class LogFragment extends Fragment
                         {
                             if (task.isSuccessful())
                             {
+                                Log.d("User login status", "The user has logged in");
                                 Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
                             }
                             else
                             {
+                                Log.d("User login status", "Incorrect login data");
                                 mLoginProgressBar.setVisibility(View.INVISIBLE);
                                 mLogInButton.setVisibility(View.VISIBLE);
                                 AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
@@ -203,7 +202,18 @@ public class LogFragment extends Fragment
         });
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
+        FirebaseUser firebaseUser = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
+
+        if (firebaseUser != null)
+        {
+            Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
+        }
+    }
 
     @Override
     public void onResume()
