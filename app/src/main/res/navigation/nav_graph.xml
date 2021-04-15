@@ -24,6 +24,9 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_logFragment_to_reset_fragment"
+            app:destination="@id/reset_fragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -45,6 +48,15 @@
         tools:layout="@layout/home_fragment" >
         <action
             android:id="@+id/action_home_fragment_to_logFragment"
+            app:destination="@id/logFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reset_fragment"
+        android:name="pl.edu.pum.movie_downloader.fragments.ForgotPasswordFragment"
+        android:label="log_fragment"
+        tools:layout="@layout/forgot_password_fragment" >
+        <action
+            android:id="@+id/action_reset_fragment_to_logFragment"
             app:destination="@id/logFragment" />
     </fragment>
 

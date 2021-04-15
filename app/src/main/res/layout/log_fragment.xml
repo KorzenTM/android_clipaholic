@@ -22,6 +22,7 @@
     <ImageView
         android:layout_toEndOf="@id/hello_text_view"
         android:layout_marginTop="50sp"
+        android:layout_marginEnd="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleX="2"
@@ -33,8 +34,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/hello_text_view"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
         android:layout_margin="10sp">
 
         <TextView
@@ -63,13 +62,23 @@
             android:inputType="textPassword"
             android:hint="Password" />
 
+        <TextView
+            android:id="@+id/forgot_password_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/password_field"
+            android:layout_margin="5sp"
+            android:text="Forgot your password?"
+            android:textStyle="bold"
+            android:textColor="#4169E1"/>
+
         <Button
             android:id="@+id/login_button"
             android:width="250sp"
             android:layout_margin="10sp"
             android:backgroundTint="#2E8B57"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/password_field"
+            android:layout_below="@id/forgot_password_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LOG IN"/>

@@ -38,6 +38,7 @@ public class LogFragment extends Fragment
 {
     private Button mLogInButton;
     private TextView mRegisterTextView;
+    private TextView mForgotPasswordTextView;
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private ImageButton mGoogleSignImageButton;
@@ -58,6 +59,7 @@ public class LogFragment extends Fragment
 
         mLogInButton = view.findViewById(R.id.login_button);
         mRegisterTextView = view.findViewById(R.id.register_text_view);
+        mForgotPasswordTextView = view.findViewById(R.id.forgot_password_text_view);
         mEmailEditText = view.findViewById(R.id.email_field);
         mPasswordEditText = view.findViewById(R.id.password_field);
         mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
@@ -84,6 +86,15 @@ public class LogFragment extends Fragment
                 {
                     signInUser(email, password);
                 }
+            }
+        });
+
+        mForgotPasswordTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Navigation.findNavController(view).navigate(R.id.action_logFragment_to_reset_fragment);
             }
         });
 
