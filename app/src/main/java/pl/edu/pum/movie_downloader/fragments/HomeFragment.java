@@ -61,6 +61,6 @@ public class HomeFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        mHelloUserTextView.setText("Hello " + mCurrentUser.getEmail());
+        mHelloUserTextView.setText("Hello " + mCurrentUser.getDisplayName());
     }
 }

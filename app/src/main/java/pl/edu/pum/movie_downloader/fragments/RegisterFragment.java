@@ -29,9 +29,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,46 +105,7 @@ public class RegisterFragment extends Fragment
                         setPasswordFieldState("Correct password", 0);
                         mRegisterButton.setVisibility(View.INVISIBLE);
                         mRegisterProgressBar.setVisibility(View.VISIBLE);
-
-                        User newUser = new User(nickname, email, password);
-                        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
-                        FirebaseAuth firebaseAuth = fireBaseAuthHandler.getAuthorization();
-
-                        firebaseAuth.createUserWithEmailAndPassword(newUser.getUserEmail(),
-                                                                    newUser.getUserPassword()).
-                                addOnCompleteListener(new OnCompleteListener<AuthResult>()
-                        {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task)
-                            {
-                                if (task.isSuccessful())
-                                {
-                                    Log.d("User register status", "New account registration successful");
-                                    Toast.makeText(getContext(), "An account has been created. Welcome!", Toast.LENGTH_LONG).show();
-                                    firebaseAuth.signOut();
-                                    Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_logFragment);
-                                }
-                                else
-                                {
-                                    Log.d("User register status", "New account registration unsuccessful");
-                                    mRegisterButton.setVisibility(View.VISIBLE);
-                                    mRegisterProgressBar.setVisibility(View.INVISIBLE);
-                                    AlertDialog alertDialog = new AlertDialog.Builder(getContext(), R.drawable.rounded_corners).create();
-                                    alertDialog.setTitle("Register failure");
-                                    alertDialog.setMessage("An error occurred during sign in.\n" +
-                                            "Please check your registration details or try again later.");
-                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                            new DialogInterface.OnClickListener()
-                                            {
-                                                public void onClick(DialogInterface dialog, int which)
-                                                {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    alertDialog.show();
-                                }
-                            }
-                        });
+                        createNewUser(nickname, email, password);
                     }
                 }
             }
@@ -274,6 +239,97 @@ public class RegisterFragment extends Fragment
             mRepeatedPasswordEditText.setError(msg);
         }
 
+    }
+
+    private void createNewUser(String nickname, String email, String password)
+    {
+        User newUser = new User(nickname, email, password);
+        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+        FirebaseAuth firebaseAuth = fireBaseAuthHandler.getAuthorization();
+
+        firebaseAuth.createUserWithEmailAndPassword(newUser.getUserEmail(),
+                newUser.getUserPassword()).
+                addOnCompleteListener(new OnCompleteListener<AuthResult>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            FirebaseUser user = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
+                            sendActivationEmailToUser(user);
+                            setDisplayNameForNewUser(newUser.getUserNickname(), user);
+                            firebaseAuth.signOut();
+                            Log.d("User register status", "New account registration successful");
+                            Navigation.findNavController(RegisterFragment.this.getView()).navigate(R.id.action_registerFragment_to_logFragment);
+                        }
+                        else
+                        {
+                            Log.d("User register status", "New account registration unsuccessful");
+                            showErrorAlert();
+                        }
+                    }
+                });
+    }
+
+    private void sendActivationEmailToUser(FirebaseUser user)
+    {
+        //send verification email for new user email
+        user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(getContext(), "Verification E-mail has been sent.", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Log.d("Activation link status", "onFailure: Email not sent " + e.toString());
+
+            }
+        });
+    }
+
+    private void setDisplayNameForNewUser(String nick, FirebaseUser user)
+    {
+        //set Display name for new user
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest
+                .Builder()
+                .setDisplayName(nick)
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        Log.d("User account update status", "User profile updated");
+                    }
+                });
+    }
+
+    private void showErrorAlert()
+    {
+        mRegisterButton.setVisibility(View.VISIBLE);
+        mRegisterProgressBar.setVisibility(View.INVISIBLE);
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext(), R.drawable.rounded_corners).create();
+        alertDialog.setTitle("Register failure");
+        alertDialog.setMessage("An error occurred during sign in.\n" +
+                "Please check your registration details or try again later.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override
