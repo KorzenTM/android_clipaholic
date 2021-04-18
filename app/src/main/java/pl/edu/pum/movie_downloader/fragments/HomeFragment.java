@@ -23,6 +23,7 @@ public class HomeFragment extends Fragment
 {
     private TextView mHelloUserTextView;
     private Button mLogOutButton;
+
     FirebaseUser mCurrentUser;
 
     @Override

@@ -212,7 +212,7 @@ public class LogFragment extends Fragment
                     if (user.isEmailVerified())
                     {
                         Log.d("User login status", "The user has logged in");
-                        Navigation.findNavController(LogFragment.this.getView()).navigate(R.id.action_logFragment_to_home_fragment);
+                        Navigation.findNavController(LogFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
                     }
                     else
                     {

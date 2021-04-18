@@ -39,6 +39,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
@@ -261,7 +262,7 @@ public class RegisterFragment extends Fragment
                             setDisplayNameForNewUser(newUser.getUserNickname(), user);
                             firebaseAuth.signOut();
                             Log.d("User register status", "New account registration successful");
-                            Navigation.findNavController(RegisterFragment.this.getView()).navigate(R.id.action_registerFragment_to_logFragment);
+                            Navigation.findNavController(RegisterFragment.this.requireView()).navigate(R.id.action_registerFragment_to_logFragment);
                         }
                         else
                         {
@@ -288,7 +289,6 @@ public class RegisterFragment extends Fragment
             public void onFailure(@NonNull Exception e)
             {
                 Log.d("Activation link status", "onFailure: Email not sent " + e.toString());
-
             }
         });
     }

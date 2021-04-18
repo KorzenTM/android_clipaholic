@@ -52,9 +52,9 @@
     </fragment>
     <fragment
         android:id="@+id/reset_fragment"
-        android:name="pl.edu.pum.movie_downloader.fragments.ForgotPasswordFragment"
+        android:name="pl.edu.pum.movie_downloader.fragments.ResetPasswordFragment"
         android:label="log_fragment"
-        tools:layout="@layout/forgot_password_fragment" >
+        tools:layout="@layout/reset_password_fragment" >
         <action
             android:id="@+id/action_reset_fragment_to_logFragment"
             app:destination="@id/logFragment" />
