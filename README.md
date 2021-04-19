@@ -1,4 +1,4 @@
-# Cripaholic
+# Clipaholic
 
 ## Table of contents
 * [General info](#general-info)
