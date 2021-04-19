@@ -1,10 +1,7 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class ResetPasswordFragment extends Fragment
@@ -64,7 +58,23 @@ public class ResetPasswordFragment extends Fragment
                     mResetPasswordButton.setActivated(false);
                     mResetPasswordButton.setText("Wait...");
                     mWaitingForSendProgressBar.setVisibility(View.VISIBLE);
-                    sendResetEmailToUser(email);
+                    FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+                    fireBaseAuthHandler.sendResetEmailToUser(email, new FireBaseAuthState()
+                    {
+                        @Override
+                        public void isOperationSuccessfully(String state)
+                        {
+                            if (state.equals("RESET_EMAIL_SENT"))
+                            {
+                                Toast.makeText(getContext(), "Password reset E-mail has been sent.", Toast.LENGTH_LONG).show();
+                                Navigation.findNavController(ResetPasswordFragment.this.requireView()).navigate(R.id.action_reset_fragment_to_logFragment);
+                            }
+                            else if (state.equals("RESET_EMAIL_NOT_SENT"))
+                            {
+                                mAlerts.showSendEmailErrorAlert();
+                            }
+                        }
+                    });
                 }
                 else
                 {
@@ -73,31 +83,6 @@ public class ResetPasswordFragment extends Fragment
             }
         });
         return view;
-    }
-
-    private void sendResetEmailToUser(String email)
-    {
-        FirebaseAuth firebaseAuth = FireBaseAuthHandler.getInstance().getAuthorization();
-
-        firebaseAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>()
-        {
-            @Override
-            public void onSuccess(Void aVoid)
-            {
-                Log.d("Reset password status", "Reset password e-mail has been sent");
-                Toast.makeText(getContext(), "Password reset E-mail has been sent.", Toast.LENGTH_LONG).show();
-                Navigation.findNavController(ResetPasswordFragment.this.requireView()).navigate(R.id.action_reset_fragment_to_logFragment);
-            }
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
-            {
-                Log.d("Reset password status", "onFailure: email " + e.toString());
-                mAlerts.showSendEmailErrorAlert();
-            }
-        });
-
     }
 
     @SuppressLint("SetTextI18n")

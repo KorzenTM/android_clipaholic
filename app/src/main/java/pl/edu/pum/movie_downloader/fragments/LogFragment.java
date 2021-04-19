@@ -37,6 +37,7 @@ import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.alerts.AlertDialogState;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class LogFragment extends Fragment
@@ -98,7 +99,57 @@ public class LogFragment extends Fragment
                 }
                 else
                 {
-                    signInUser(email, password);
+                    mLogInButton.setVisibility(View.INVISIBLE);
+                    mLoginProgressBar.setVisibility(View.VISIBLE);
+                    FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+                    fireBaseAuthHandler.signInUser(email, password, new FireBaseAuthState()
+                    {
+                        @Override
+                        public void isOperationSuccessfully(String state)
+                        {
+                            if (state.equals("SUCCESS_LOGIN"))
+                            {
+                                Navigation.findNavController(LogFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
+                            }
+                            else if (state.equals("NO_EMAIL_VERIFIED"))
+                            {
+                                mLoginProgressBar.setVisibility(View.INVISIBLE);
+                                mLogInButton.setVisibility(View.VISIBLE);
+                                mAlerts.showNoActivatedAccountAlert(new AlertDialogState()
+                                {
+                                    @Override
+                                    public void onSendEmailAgainButtonClicked(boolean value)
+                                    {
+                                        if (value)
+                                        {
+                                            fireBaseAuthHandler.sendActivationEmailAgain(new FireBaseAuthState()
+                                            {
+                                                @Override
+                                                public void isOperationSuccessfully(String state)
+                                                {
+                                                    if (state.equals("EMAIL_SENT"))
+                                                    {
+                                                        Toast.makeText(getContext(), "Verification E-mail has been sent again.", Toast.LENGTH_LONG).show();
+                                                    }
+                                                    else
+                                                    {
+                                                        Toast.makeText(getContext(), "Verification E-mail has been not sent. Try again.", Toast.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                            else if (state.equals("INCORRECT_LOGIN_DATA"))
+                            {
+                                mLoginProgressBar.setVisibility(View.INVISIBLE);
+                                mLogInButton.setVisibility(View.VISIBLE);
+                                mAlerts.showWrongUserDataAlert();
+                            }
+
+                        }
+                    });
                 }
             }
         });
@@ -215,79 +266,6 @@ public class LogFragment extends Fragment
                 return false;
             }
         });
-    }
-
-    private void signInUser(String email, String password)
-    {
-        mLogInButton.setVisibility(View.INVISIBLE);
-        mLoginProgressBar.setVisibility(View.VISIBLE);
-
-        FirebaseAuth firebaseAuth = FireBaseAuthHandler.getInstance().getAuthorization();
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task)
-            {
-                if (task.isSuccessful())
-                {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                    if (user.isEmailVerified())
-                    {
-                        Log.d("User login status", "The user has logged in");
-                        Navigation.findNavController(LogFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
-                    }
-                    else
-                    {
-                        mLoginProgressBar.setVisibility(View.INVISIBLE);
-                        mLogInButton.setVisibility(View.VISIBLE);
-                        mAlerts.showNoActivatedAccountAlert(new AlertDialogState()
-                        {
-                            @Override
-                            public void onSendEmailAgainButtonClicked(boolean value)
-                            {
-                                if (value)
-                                {
-                                    sendActivationEmailAgain();
-                                }
-                            }
-                        });
-                    }
-
-                }
-                else
-                {
-                    Log.d("User login status", "Incorrect login data");
-                    mLoginProgressBar.setVisibility(View.INVISIBLE);
-                    mLogInButton.setVisibility(View.VISIBLE);
-                    mAlerts.showWrongUserDataAlert();
-                }
-            }
-        });
-    }
-
-    private void sendActivationEmailAgain()
-    {
-        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
-        FirebaseAuth firebaseAuth = fireBaseAuthHandler.getAuthorization();
-        FirebaseUser user = fireBaseAuthHandler.getAuthorization().getCurrentUser();
-        user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>()
-        {
-            @Override
-            public void onSuccess(Void aVoid)
-            {
-                Toast.makeText(getContext(), "Verification E-mail has been sent again.", Toast.LENGTH_LONG).show();
-                firebaseAuth.signOut();
-            }
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
-            {
-                Log.d("Activation link status", "onFailure: Email not sent " + e.toString());
-            }
-        });
-
     }
 
     @Override

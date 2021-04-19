@@ -1,14 +1,10 @@
 package pl.edu.pum.movie_downloader.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.google.firebase.auth.FirebaseUser;
-
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity
 {
