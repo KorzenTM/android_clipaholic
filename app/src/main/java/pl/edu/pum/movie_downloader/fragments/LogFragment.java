@@ -1,8 +1,7 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,8 +31,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.jetbrains.annotations.NotNull;
+
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.alerts.Alerts;
+import pl.edu.pum.movie_downloader.alerts.AlertDialogState;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class LogFragment extends Fragment
 {
@@ -44,8 +49,15 @@ public class LogFragment extends Fragment
     private ImageButton mGoogleSignImageButton;
     private ImageButton mFacebookSignImageButton;
     private ProgressBar mLoginProgressBar;
+    private Alerts mAlerts;
 
     @Override
+    public void onAttach(@NotNull Context context) {
+        super.onAttach(context);
+    }
+
+
+        @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -56,6 +68,7 @@ public class LogFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.log_fragment, container, false);
+        ((DrawerLocker) getActivity()).setDrawerEnabled(false);
 
         mLogInButton = view.findViewById(R.id.login_button);
         mRegisterTextView = view.findViewById(R.id.register_text_view);
@@ -65,6 +78,7 @@ public class LogFragment extends Fragment
         mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
         mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
         mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
+        mAlerts = new Alerts(getContext(), requireActivity());
 
         mLogInButton.setOnClickListener(new View.OnClickListener()
         {
@@ -126,6 +140,15 @@ public class LogFragment extends Fragment
         });
         AddClearButton(mEmailEditText);
         AddClearButton(mPasswordEditText);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                mAlerts.showExitFromApplicationAlert();
+            }
+        });
         return view;
     }
 
@@ -136,7 +159,7 @@ public class LogFragment extends Fragment
 
         FirebaseUser firebaseUser = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
 
-        if (firebaseUser != null)
+        if (firebaseUser != null && firebaseUser.isEmailVerified())
         {
             Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
         }
@@ -218,66 +241,29 @@ public class LogFragment extends Fragment
                     {
                         mLoginProgressBar.setVisibility(View.INVISIBLE);
                         mLogInButton.setVisibility(View.VISIBLE);
-                        showNoActivatedAccountAlert();
+                        mAlerts.showNoActivatedAccountAlert(new AlertDialogState()
+                        {
+                            @Override
+                            public void onSendEmailAgainButtonClicked(boolean value)
+                            {
+                                if (value)
+                                {
+                                    sendActivationEmailAgain();
+                                }
+                            }
+                        });
                     }
 
                 }
                 else
                 {
                     Log.d("User login status", "Incorrect login data");
-                    showWrongUserDataAlert();
+                    mLoginProgressBar.setVisibility(View.INVISIBLE);
+                    mLogInButton.setVisibility(View.VISIBLE);
+                    mAlerts.showWrongUserDataAlert();
                 }
             }
         });
-    }
-
-    private void showWrongUserDataAlert()
-    {
-        mLoginProgressBar.setVisibility(View.INVISIBLE);
-        mLogInButton.setVisibility(View.VISIBLE);
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle("Login failure");
-        alertDialog.setMessage("An error occurred during sign in.\n" +
-                "Please check your login details or try again later.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
-
-    private void showNoActivatedAccountAlert()
-    {
-        mLoginProgressBar.setVisibility(View.INVISIBLE);
-        mLogInButton.setVisibility(View.VISIBLE);
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle("Account not activated");
-        alertDialog.setMessage("In order to log in, you must activate your account.\n" +
-                               "You will find the link to do this in the message sent\n" +
-                               "after creating your account.");
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Send activation e-mail again",
-                new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                sendActivationEmailAgain();
-            }
-        });
-        alertDialog.show();
     }
 
     private void sendActivationEmailAgain()
@@ -310,5 +296,6 @@ public class LogFragment extends Fragment
         super.onResume();
         mLoginProgressBar.setVisibility(View.INVISIBLE);
         mLogInButton.setVisibility(View.VISIBLE);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
     }
 }

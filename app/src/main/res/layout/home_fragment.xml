@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView
     android:layout_height="match_parent"
-    android:background="#1E90FF">
-
-    <TextView
-        android:id="@+id/hello_user_text_view"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/app_background">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textStyle="bold"
-        android:textSize="30sp"
-        android:textColor="@color/white" />
-
-    <Button
-        android:id="@+id/log_out_button"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log out"
-        android:layout_gravity="center"
-        />
-</FrameLayout>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/hello_user_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+</ScrollView>

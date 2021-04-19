@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_header"
     android:layout_width="match_parent"
     android:layout_height="160dp"
-    android:background="@color/colorAccent"
+    android:background="@color/nav_header_background"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -13,16 +15,27 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/nav_header_imageView"
+        android:id="@+id/nav_user_avatar_imageView"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@mipmap/ic_launcher" />
+        app:srcCompat="@mipmap/person_icon" />
 
     <TextView
-        android:id="@+id/nav_header_textView"
+        android:id="@+id/nav_user_nickname_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="Chike Mgbemena"
+        android:paddingTop="16sp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/nav_email_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:textStyle="italic"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 </LinearLayout>

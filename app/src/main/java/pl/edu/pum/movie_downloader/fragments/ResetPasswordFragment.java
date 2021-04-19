@@ -23,13 +23,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class ResetPasswordFragment extends Fragment
 {
     private EditText mEmailEditText;
     private Button mResetPasswordButton;
     private ProgressBar mWaitingForSendProgressBar;
+    private Alerts mAlerts;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -42,10 +45,12 @@ public class ResetPasswordFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.reset_password_fragment, container, false);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
         mEmailEditText= view.findViewById(R.id.reset_password_email_edit_text);
         mResetPasswordButton = view.findViewById(R.id.reset_password_button);
         mWaitingForSendProgressBar = view.findViewById(R.id.wait_for_send_reset_email_progress_bar);
+        mAlerts = new Alerts(requireContext(), requireActivity());
 
         mResetPasswordButton.setOnClickListener(new View.OnClickListener()
         {
@@ -89,27 +94,10 @@ public class ResetPasswordFragment extends Fragment
             public void onFailure(@NonNull Exception e)
             {
                 Log.d("Reset password status", "onFailure: email " + e.toString());
-                showSendEmailErrorAlert();
+                mAlerts.showSendEmailErrorAlert();
             }
         });
 
-    }
-
-    private void showSendEmailErrorAlert()
-    {
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle("Sending error email");
-        alertDialog.setMessage("An error occurred during sending an email.\n" +
-                "Please check your detail or try again later.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 
     @SuppressLint("SetTextI18n")
@@ -120,5 +108,6 @@ public class ResetPasswordFragment extends Fragment
         mResetPasswordButton.setActivated(true);
         mResetPasswordButton.setText("RESET PASSWORD");
         mWaitingForSendProgressBar.setVisibility(View.INVISIBLE);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
     }
 }

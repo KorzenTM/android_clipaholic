@@ -2,6 +2,7 @@ package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -37,13 +38,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.models.User;
+import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class RegisterFragment extends Fragment
 {
@@ -56,6 +61,12 @@ public class RegisterFragment extends Fragment
     private CheckBox mShowPasswordsCheckBox;
     private static final int PASSWORD_LENGTH = 8;
     List<EditText> mForm = new ArrayList<EditText>();
+    private Alerts mAlerts;
+
+    @Override
+    public void onAttach(@NotNull Context context) {
+        super.onAttach(context);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -68,6 +79,7 @@ public class RegisterFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.register_fragment, container, false);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
         mNickEditView = view.findViewById(R.id.nick);
         mEmailEditText = view.findViewById(R.id.email);
@@ -76,6 +88,7 @@ public class RegisterFragment extends Fragment
         mRegisterButton = view.findViewById(R.id.register_button);
         mRegisterProgressBar = view.findViewById(R.id.wait_for_register_bar);
         mShowPasswordsCheckBox = view.findViewById(R.id.show_passwords_checkbox);
+        mAlerts = new Alerts(requireContext(), requireActivity());
 
         //get all EditText from register form
         RelativeLayout layout = view.findViewById(R.id.register_form_layout);
@@ -267,7 +280,9 @@ public class RegisterFragment extends Fragment
                         else
                         {
                             Log.d("User register status", "New account registration unsuccessful");
-                            showErrorAlert();
+                            mRegisterButton.setVisibility(View.VISIBLE);
+                            mRegisterProgressBar.setVisibility(View.INVISIBLE);
+                            mAlerts.showErrorAlert();
                         }
                     }
                 });
@@ -313,30 +328,12 @@ public class RegisterFragment extends Fragment
                 });
     }
 
-    private void showErrorAlert()
-    {
-        mRegisterButton.setVisibility(View.VISIBLE);
-        mRegisterProgressBar.setVisibility(View.INVISIBLE);
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext(), R.drawable.rounded_corners).create();
-        alertDialog.setTitle("Register failure");
-        alertDialog.setMessage("An error occurred during sign in.\n" +
-                "Please check your registration details or try again later.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
-
     @Override
     public void onResume()
     {
         super.onResume();
         mRegisterButton.setVisibility(View.VISIBLE);
         mRegisterProgressBar.setVisibility(View.INVISIBLE);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
@@ -9,7 +10,7 @@
         android:id="@+id/logFragment"
         tools:layout="@layout/log_fragment"
         android:name="pl.edu.pum.movie_downloader.fragments.LogFragment"
-        android:label="LogFragment" >
+        android:label="Clipaholic" >
         <action
             android:id="@+id/action_logFragment_to_registerFragment"
             app:destination="@id/registerFragment"
@@ -32,7 +33,7 @@
         android:id="@+id/registerFragment"
         android:name="pl.edu.pum.movie_downloader.fragments.RegisterFragment"
         tools:layout="@layout/register_fragment"
-        android:label="RegisterFragment" >
+        android:label="Clipaholic" >
         <action
             android:id="@+id/action_registerFragment_to_logFragment"
             app:destination="@id/logFragment"
@@ -44,7 +45,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="pl.edu.pum.movie_downloader.fragments.HomeFragment"
-        android:label="home_fragment"
+        android:label="Clipaholic"
         tools:layout="@layout/home_fragment" >
         <action
             android:id="@+id/action_home_fragment_to_logFragment"
@@ -53,11 +54,12 @@
     <fragment
         android:id="@+id/reset_fragment"
         android:name="pl.edu.pum.movie_downloader.fragments.ResetPasswordFragment"
-        android:label="log_fragment"
+        android:label="Clipaholic"
         tools:layout="@layout/reset_password_fragment" >
         <action
             android:id="@+id/action_reset_fragment_to_logFragment"
             app:destination="@id/logFragment" />
     </fragment>
+
 
 </navigation>
