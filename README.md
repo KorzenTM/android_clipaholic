@@ -1,4 +1,4 @@
-# Movie Downloader
+# Cripaholic
 
 ## Table of contents
 * [General info](#general-info)
