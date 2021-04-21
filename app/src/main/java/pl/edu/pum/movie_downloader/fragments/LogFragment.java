@@ -62,6 +62,15 @@ public class LogFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        mAlerts = new Alerts(getContext(), requireActivity());
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                mAlerts.showExitFromApplicationAlert();
+            }
+        });
     }
 
     @Nullable
@@ -79,7 +88,6 @@ public class LogFragment extends Fragment
         mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
         mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
         mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
-        mAlerts = new Alerts(getContext(), requireActivity());
 
         mLogInButton.setOnClickListener(new View.OnClickListener()
         {
@@ -192,14 +200,6 @@ public class LogFragment extends Fragment
         AddClearButton(mEmailEditText);
         AddClearButton(mPasswordEditText);
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true)
-        {
-            @Override
-            public void handleOnBackPressed()
-            {
-                mAlerts.showExitFromApplicationAlert();
-            }
-        });
         return view;
     }
 

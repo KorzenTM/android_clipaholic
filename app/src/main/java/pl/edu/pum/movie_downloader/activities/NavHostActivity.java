@@ -3,6 +3,7 @@ package pl.edu.pum.movie_downloader.activities;
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -17,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -27,7 +29,10 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.fragments.HomeFragment;
+import pl.edu.pum.movie_downloader.fragments.LogFragment;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class NavHostActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker
@@ -36,6 +41,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavController navController;
     private NavigationView navigationView;
+    private Alerts mAlerts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +52,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.notification_bar_background));
 
+        mAlerts = new Alerts(this, NavHostActivity.this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -116,6 +123,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     @Override
     public void onBackPressed()
     {
+        boolean handled = false;
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
         {
             drawerLayout.closeDrawer(GravityCompat.START);
