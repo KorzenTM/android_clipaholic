@@ -2,6 +2,7 @@ package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,6 +24,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,18 +54,15 @@ public class LogFragment extends Fragment
     private TextView mForgotPasswordTextView;
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
-    private ImageButton mGoogleSignImageButton;
-    private ImageButton mFacebookSignImageButton;
     private ProgressBar mLoginProgressBar;
     private Alerts mAlerts;
+    private SignInButton mGoogleSignInButton;
+    GoogleSignInOptions mGoogleSignInOptions;
+    GoogleSignInClient mGoogleSignInClient;
+    private static final String TAG = "GoogleActivity";
+    private static final int RC_SIGN_IN = 9001;
 
     @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-    }
-
-
-        @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -85,9 +89,15 @@ public class LogFragment extends Fragment
         mForgotPasswordTextView = view.findViewById(R.id.forgot_password_text_view);
         mEmailEditText = view.findViewById(R.id.email_field);
         mPasswordEditText = view.findViewById(R.id.password_field);
-        mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
-        mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
         mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
+        mGoogleSignInButton = view.findViewById(R.id.google_sing_in_button);
+
+        //configure google sign in
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), mGoogleSignInOptions);
 
         mLogInButton.setOnClickListener(new View.OnClickListener()
         {
@@ -180,23 +190,16 @@ public class LogFragment extends Fragment
             }
         });
 
-        mGoogleSignImageButton.setOnClickListener(new View.OnClickListener()
+        mGoogleSignInButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                //TODO log by Google
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 
-        mFacebookSignImageButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                //Todo log by Facebook
-            }
-        });
         AddClearButton(mEmailEditText);
         AddClearButton(mPasswordEditText);
 
@@ -275,5 +278,43 @@ public class LogFragment extends Fragment
         mLoginProgressBar.setVisibility(View.INVISIBLE);
         mLogInButton.setVisibility(View.VISIBLE);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN)
+        {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try
+            {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+
+                fireBaseAuthHandler.signWithGoogleAccount(account.getIdToken(), new FireBaseAuthState()
+                {
+                    @Override
+                    public void isOperationSuccessfully(String state)
+                    {
+                        if (state.equals("SUCCESS_LOGIN_WITH_GOOGLE"))
+                        {
+                            Toast.makeText(requireContext(), "Successfully login with Google Account", Toast.LENGTH_LONG).show();
+                            Navigation.findNavController(requireView()).navigate(R.id.action_logFragment_to_home_fragment);
+                        }
+                        else if (state.equals("NO_SUCCESS_LOGIN_WITH_GOOGLE"))
+                        {
+                            mAlerts.showWrongUserDataAlert();
+                        }
+                    }
+                });
+            }
+            catch (ApiException e)
+            {
+                Log.w(TAG, "Google sign in failed", e);
+            }
+        }
     }
 }

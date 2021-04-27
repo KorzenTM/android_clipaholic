@@ -123,37 +123,14 @@
                 android:layout_centerHorizontal="true"
                 android:textStyle="bold" />
 
-            <ImageButton
-                android:id="@+id/google_login_button"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
+            <com.google.android.gms.common.SignInButton
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/line2"
-                android:layout_marginStart="8sp"
-                android:layout_toEndOf="@id/placeholder"
-                app:srcCompat="@drawable/google_icon"
-                android:background="?android:selectableItemBackground"/>
+                android:id="@+id/google_sing_in_button"
+                android:layout_margin="10sp"
+                android:layout_below="@id/line2" />
 
-            <TextView
-                android:id="@+id/placeholder"
-                android:layout_below="@id/line2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"/>
 
-            <ImageButton
-                android:id="@+id/facebook_login_button"
-                android:layout_below="@id/line2"
-                android:layout_toStartOf="@id/placeholder"
-                android:layout_centerHorizontal="true"
-                android:layout_marginEnd="8sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/facebook_icon"
-                android:background="?android:selectableItemBackground"
-                android:scaleX="1.25"
-                android:scaleY="1.25"
-                />
 
         </RelativeLayout>
     </RelativeLayout>
