@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
@@ -51,11 +52,6 @@ public class RegisterFragment extends Fragment
     private Alerts mAlerts;
 
     @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -65,7 +61,7 @@ public class RegisterFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.register_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
         mNickEditView = view.findViewById(R.id.nick);

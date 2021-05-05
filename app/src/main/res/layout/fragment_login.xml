@@ -31,7 +31,7 @@
             app:srcCompat="@mipmap/login_icon_foreground"/>
 
         <RelativeLayout
-            android:background="@drawable/relative_layout_rounded_background"
+            android:background="@drawable/layout_rounded_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/hello_text_view"

@@ -1,6 +1,7 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,24 +30,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.jetbrains.annotations.NotNull;
-
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.alerts.AlertDialogState;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
-public class LogFragment extends Fragment
+public class LoginFragment extends Fragment
 {
     private Button mLogInButton;
     private TextView mRegisterTextView;
@@ -81,8 +75,9 @@ public class LogFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.log_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+
 
         mLogInButton = view.findViewById(R.id.login_button);
         mRegisterTextView = view.findViewById(R.id.register_text_view);
@@ -127,7 +122,7 @@ public class LogFragment extends Fragment
                         {
                             if (state.equals("SUCCESS_LOGIN"))
                             {
-                                Navigation.findNavController(LogFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
+                                Navigation.findNavController(LoginFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
                             }
                             else if (state.equals("NO_EMAIL_VERIFIED"))
                             {

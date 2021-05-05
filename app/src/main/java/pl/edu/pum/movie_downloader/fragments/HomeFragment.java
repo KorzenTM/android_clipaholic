@@ -1,13 +1,12 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -20,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.adapters.SourcesRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
@@ -31,18 +33,16 @@ import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 public class HomeFragment extends Fragment
 {
     private TextView mHelloUserTextView;
-    private RecyclerView mRecyclerView;
     SourcesRecyclerViewAdapter mMyAdapter;
     private Alerts mAlerts;
-    private List<Integer> mLogos = new ArrayList<Integer>()
+    private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>()
     {
         {
-            add(R.mipmap.youtube_icon);
-            add(R.mipmap.facebook_icon);
-            add(R.mipmap.vimeo_icon);
+            add(new Pair(R.mipmap.youtube_icon, "YouTube"));
+            add(new Pair(R.mipmap.facebook_icon, "Facebook"));
+            add(new Pair(R.mipmap.vimeo_icon, "Vimeo"));
         }
     };
-
     FirebaseUser mCurrentUser;
 
     @Override
@@ -64,28 +64,27 @@ public class HomeFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.home_fragment, container, false);
-        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
 
         mHelloUserTextView = view.findViewById(R.id.hello_user_text_view);
-        mRecyclerView = view.findViewById(R.id.source_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        mMyAdapter = new SourcesRecyclerViewAdapter(getActivity(), mLogos);
-        mRecyclerView.setAdapter(mMyAdapter);
-
         FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
         mCurrentUser = fireBaseAuthHandler.getAuthorization().getCurrentUser();
 
         return view;
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        mHelloUserTextView.setText("Hello " + mCurrentUser.getDisplayName());
-
+        RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        mMyAdapter = new SourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
+                getActivity(),
+                mSources);
+        mRecyclerView.setAdapter(mMyAdapter);
+        setHelloMessageDependOfTime();
     }
 
     @Override
@@ -93,5 +92,29 @@ public class HomeFragment extends Fragment
     {
         super.onResume();
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void setHelloMessageDependOfTime()
+    {
+        Calendar calendar = Calendar.getInstance();
+        int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+
+        if(timeOfDay < 12)
+        {
+            mHelloUserTextView.setText("Good Morning " + mCurrentUser.getDisplayName());
+        }
+        else if(timeOfDay < 16)
+        {
+            mHelloUserTextView.setText("Good Afternoon " + mCurrentUser.getDisplayName());
+        }
+        else if(timeOfDay < 21)
+        {
+            mHelloUserTextView.setText("Good Evening " + mCurrentUser.getDisplayName());
+        }
+        else
+        {
+            mHelloUserTextView.setText("Good Night " + mCurrentUser.getDisplayName());
+        }
     }
 }

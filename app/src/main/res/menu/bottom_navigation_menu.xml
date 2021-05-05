@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/clip_information_fragment"
+        android:enabled="true"
+        android:icon="@drawable/home_ic"
+        android:title="@string/home"/>
+    <item
+        android:id="@+id/download_list_fragment"
+        android:enabled="true"
+        android:icon="@drawable/download_ic"
+        android:title="@string/download_list"/>
+    <item
+        android:id="@+id/download_history_fragment"
+        android:enabled="true"
+        android:icon="@drawable/history_ic"
+        android:title="@string/history"/>
+</menu>

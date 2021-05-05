@@ -5,4 +5,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_maps">Map</string>
+    <string name="link_example"><![CDATA[Example: https://www.youtube.com/watch?v=LUO5qhpD2pA&t=1792s]]></string>
+    <string name="home">Home</string>
+    <string name="download_list">Download list</string>
+    <string name="history">History</string>
 </resources>
