@@ -1,18 +1,19 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,11 +22,9 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.activities.NavHostActivity;
-import pl.edu.pum.movie_downloader.adapters.SourcesRecyclerViewAdapter;
+import pl.edu.pum.movie_downloader.adapters.AvailableSourcesRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
@@ -33,7 +32,7 @@ import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 public class HomeFragment extends Fragment
 {
     private TextView mHelloUserTextView;
-    SourcesRecyclerViewAdapter mMyAdapter;
+    AvailableSourcesRecyclerViewAdapter mMyAdapter;
     private Alerts mAlerts;
     private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>()
     {
@@ -71,6 +70,15 @@ public class HomeFragment extends Fragment
         FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
         mCurrentUser = fireBaseAuthHandler.getAuthorization().getCurrentUser();
 
+        Button nextSectionButton = view.findViewById(R.id.next_section_button);
+
+        nextSectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(requireView()).navigate(R.id.action_home_fragment_to_clip_information_fragment);
+            }
+        });
+
         return view;
     }
 
@@ -80,7 +88,7 @@ public class HomeFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        mMyAdapter = new SourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
+        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
                 getActivity(),
                 mSources);
         mRecyclerView.setAdapter(mMyAdapter);

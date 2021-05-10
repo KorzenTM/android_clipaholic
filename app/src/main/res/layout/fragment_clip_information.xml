@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="50dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/app_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20sp">
 
         <RelativeLayout
             android:id="@+id/get_link_layout"
@@ -20,12 +23,12 @@
             <TextView
                 android:id="@+id/placeholder_1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10sp"
                 android:text="Please enter the address for your clip of choice"
                 android:textStyle="bold"
                 android:textSize="30sp"
-                android:textColor="#4169E1"/>
+                android:textColor="@color/text_color"/>
 
             <EditText
                 android:id="@+id/link_edit_text"
@@ -60,21 +63,138 @@
             android:layout_marginRight="10sp"
             android:layout_marginBottom="10sp"
             android:background="@drawable/layout_rounded_background"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/your_clip_header"
+                android:layout_margin="5sp"
+                android:textSize="35sp"
+                android:text="Your Clip"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
+
 
             <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-                android:id="@+id/youtube_player_window"
+                android:layout_below="@id/your_clip_header"
+                android:id="@+id/youtube_player_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10sp"
+                app:autoPlay="false"
+                app:showSeekBar="true"
                 app:showYouTubeButton="true"
-                app:showFullScreenButton="false"
-                app:enableAutomaticInitialization="true"
-                app:showSeekBar="true"/>
+                android:visibility="gone"
+                />
 
+            <com.devbrackets.android.exomedia.ui.widget.VideoView
+                android:layout_below="@id/your_clip_header"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:useDefaultControls="true" />
+
+            <TextView
+                android:layout_below="@id/video_view"
+                android:layout_margin="5sp"
+                android:id="@+id/title_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <TextView
+                android:layout_below="@id/video_view"
+                android:layout_toEndOf="@id/title_header"
+                android:layout_margin="5sp"
+                android:id="@+id/title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_below="@id/title_text_view"
+                android:layout_margin="5sp"
+                android:id="@+id/view_counter_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_of_views"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <TextView
+                android:layout_below="@id/title_text_view"
+                android:layout_toEndOf="@id/view_counter_header"
+                android:layout_margin="5sp"
+                android:id="@+id/view_counter_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_below="@id/view_counter_header"
+                android:layout_margin="5sp"
+                android:id="@+id/description_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <TextView
+                android:layout_below="@id/description_header"
+                android:layout_margin="5sp"
+                android:id="@+id/description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_below="@id/description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/black"/>
+
+            <Button
+                android:id="@+id/download_button"
+                android:layout_below="@id/description_text_view"
+                android:layout_toStartOf="@id/centerPoint"
+                android:backgroundTint="@color/button_background"
+                android:layout_width="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_height="wrap_content"
+                android:text="@string/downloadButton"/>
+
+            <TextView
+                android:id="@+id/centerPoint"
+                android:text=""
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" />
+
+            <Button
+                android:id="@+id/add_to_list_button"
+                android:layout_toEndOf="@id/download_button"
+                android:layout_below="@id/description_text_view"
+                android:backgroundTint="@color/button_background"
+                android:layout_width="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_height="wrap_content"
+                android:text="@string/add_to_listButton"/>
 
         </RelativeLayout>
-
     </RelativeLayout>
-
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

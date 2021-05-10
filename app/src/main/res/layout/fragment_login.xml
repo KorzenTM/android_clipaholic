@@ -79,12 +79,12 @@
                 android:id="@+id/login_button"
                 android:width="250sp"
                 android:layout_margin="10sp"
-                android:backgroundTint="#2E8B57"
+                android:backgroundTint="@color/button_background"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/forgot_password_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LOG IN"/>
+                android:text="@string/log_in"/>
 
             <ProgressBar
                 android:id="@+id/wait_for_login_progress_bar"

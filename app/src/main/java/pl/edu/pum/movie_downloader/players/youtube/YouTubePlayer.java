@@ -9,30 +9,44 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class YouTubePlayer {
-    private final YouTubePlayerView mYouTubePlayerView;
-    private final String mLink;
+    public static YouTubePlayerView youTubePlayerView = null;
+    private final String mYouTubeID;
 
-    public YouTubePlayer(String URL, YouTubePlayerView youTubePlayerView) {
+    public YouTubePlayer(String URL, YouTubePlayerView playerView) {
 
-        this.mLink = URL;
-        this.mYouTubePlayerView = youTubePlayerView;
+        this.mYouTubeID = getYouTubeId(URL);
+        youTubePlayerView = playerView;
     }
 
-    public String getURL()
+    public String getClipID()
     {
-        return mLink;
+        return mYouTubeID;
     }
 
-    public YouTubePlayerView getYouTubePlayerView() {return mYouTubePlayerView;}
+    private String getYouTubeId(String youTubeUrl) {
+        String pattern =
+                "https?://(?:[0-9A-Z-]+\\.)?(?:youtu\\.be/|youtube\\.com\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|</a>))[?=&+%\\w]*";
+
+        Pattern compiledPattern = Pattern.compile(pattern,
+                Pattern.CASE_INSENSITIVE);
+        Matcher matcher = compiledPattern.matcher(youTubeUrl);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
 
     public void start() {
-        mYouTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+        youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
                 super.onReady(youTubePlayer);
-                String videoId = "1FJHYqE0RDg";
-                youTubePlayer.loadVideo(videoId, 0);
+                youTubePlayer.loadVideo(mYouTubeID, 0);
+                youTubePlayer.pause();
             }
 
             @Override
@@ -45,7 +59,7 @@ public class YouTubePlayer {
 
     public void release()
     {
-        mYouTubePlayerView.release();
+        youTubePlayerView.release();
     }
 
 }
