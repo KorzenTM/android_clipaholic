@@ -7,13 +7,21 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.api.services.youtube.model.Thumbnail;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
+import pl.edu.pum.movie_downloader.adapters.DownloadListRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class DownloadHistoryFragment extends Fragment {
@@ -34,6 +42,7 @@ public class DownloadHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
-        return inflater.inflate(R.layout.fragment_download_history, container, false);
+        View view =  inflater.inflate(R.layout.fragment_download_history, container, false);
+        return view;
     }
 }

@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment
         RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         mMyAdapter = new AvailableSourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
-                getActivity(),
+                requireActivity(),
                 mSources);
         mRecyclerView.setAdapter(mMyAdapter);
         setHelloMessageDependOfTime();

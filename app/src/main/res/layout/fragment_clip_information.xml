@@ -91,17 +91,8 @@
                 android:visibility="gone"
                 />
 
-            <com.devbrackets.android.exomedia.ui.widget.VideoView
-                android:layout_below="@id/your_clip_header"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:id="@+id/video_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:useDefaultControls="true" />
-
             <TextView
-                android:layout_below="@id/video_view"
+                android:layout_below="@id/youtube_player_view"
                 android:layout_margin="5sp"
                 android:id="@+id/title_header"
                 android:layout_width="wrap_content"
@@ -112,7 +103,7 @@
                 android:textColor="@color/text_color"/>
 
             <TextView
-                android:layout_below="@id/video_view"
+                android:layout_below="@id/youtube_player_view"
                 android:layout_toEndOf="@id/title_header"
                 android:layout_margin="5sp"
                 android:id="@+id/title_text_view"
@@ -166,11 +157,40 @@
                 android:layout_below="@id/description_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line"
+                android:background="@color/black"/>
+
+            <TextView
+                android:id="@+id/format_choose_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/line"
+                android:layout_margin="5sp"
+                android:text="Choose quality"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
+
+            <RadioGroup
+                android:id="@+id/quality_radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/format_choose_placeholder"/>
+
+            <View
+                android:layout_below="@id/quality_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line2"
                 android:background="@color/black"/>
 
             <Button
                 android:id="@+id/download_button"
-                android:layout_below="@id/description_text_view"
+                android:layout_below="@id/line2"
                 android:layout_toStartOf="@id/centerPoint"
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
@@ -188,7 +208,7 @@
             <Button
                 android:id="@+id/add_to_list_button"
                 android:layout_toEndOf="@id/download_button"
-                android:layout_below="@id/description_text_view"
+                android:layout_below="@id/line2"
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
                 android:layout_margin="5sp"

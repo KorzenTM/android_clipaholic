@@ -95,6 +95,9 @@
         <action
             android:id="@+id/action_clip_information_fragment_to_logFragment"
             app:destination="@id/logFragment" />
+        <action
+            android:id="@+id/action_clip_information_fragment_to_download_list_fragment"
+            app:destination="@id/download_list_fragment" />
     </fragment>
 
     <fragment

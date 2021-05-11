@@ -1,11 +1,15 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.media.MediaPlayer;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,19 +29,29 @@ import androidx.navigation.Navigation;
 
 import com.ashudevs.facebookurlextractor.FacebookExtractor;
 import com.ashudevs.facebookurlextractor.FacebookFile;
-import com.devbrackets.android.exomedia.listener.OnPreparedListener;
-import com.devbrackets.android.exomedia.ui.widget.VideoView;
+import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.Video;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
+import java.util.List;
+
+import at.huber.youtubeExtractor.VideoMeta;
+import at.huber.youtubeExtractor.YouTubeExtractor;
+import at.huber.youtubeExtractor.YtFile;
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.data.YouTubeDataAPI;
+import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
+import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadUrlState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
+
 
 public class ClipInformationFragment extends Fragment {
     private EditText mLinkEditText;
     private YouTubePlayer mYouTubePlayer = null;
+    private YouTubeDownloadURL mYouTubeDownloadURL;
+    private YouTubeDataAPI youTubeDataAPI;
+    private Video targetVideo = null;
     private TextView mTitleTextView;
     private TextView mCounterViewTextView;
     private TextView mDescriptionTextView;
@@ -68,10 +84,10 @@ public class ClipInformationFragment extends Fragment {
         mTitleTextView = view.findViewById(R.id.title_text_view);
         mCounterViewTextView = view.findViewById(R.id.view_counter_text_view);
         mDescriptionTextView = view.findViewById(R.id.description_text_view);
-        Button mCheckLinkButton = view.findViewById(R.id.check_link_button);
         mLinkEditText = view.findViewById(R.id.link_edit_text);
-        mLinkEditText.setText("https://fb.watch/5oOXKl4hBF/");
+        mLinkEditText.setText("https://www.youtube.com/watch?v=1e9B31FLT-s");
 
+        Button mCheckLinkButton = view.findViewById(R.id.check_link_button);
         mCheckLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,12 +95,10 @@ public class ClipInformationFragment extends Fragment {
                 if (!link.isEmpty()) {
                     if (link.contains("facebook") || link.contains("fb")) {
                         System.out.println("to jest link z facebooczka :)");
-                        updateUI();
-                        fb(link);
                     }
                     else if (link.contains("youtube")) {
+                        setUpYouTube(link);
                         updateUI();
-                        showYouTubePlayer(link);
                     }
                     else if (link.contains("vimeo")) {
                         Toast.makeText(requireContext(), "Vimeo", Toast.LENGTH_SHORT).show();
@@ -97,33 +111,24 @@ public class ClipInformationFragment extends Fragment {
                 }
             }
         });
+
+        Button mAddToListButton = view.findViewById(R.id.add_to_list_button);
+        mAddToListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (targetVideo != null){
+                    String title = targetVideo.getSnippet().getTitle();
+                    Thumbnail videoThumbnail = targetVideo.getSnippet().getThumbnails().getHigh();
+                    DownloadListFragment.mVideoToDownloadList.add(new Pair(videoThumbnail, title));
+                    Navigation.findNavController(requireView()).navigate(R.id.action_clip_information_fragment_to_download_list_fragment);
+                }
+            }
+        });
         return view;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void fb(String link) {
-        new FacebookExtractor(requireContext(),"https://www.facebook.com/Juliusmagic/videos/1042033149627825/",false)
-        {
-            @Override
-            protected void onExtractionComplete(FacebookFile facebookFile) {
-                Log.e("TAG","---------------------------------------");
-                Log.e("TAG","facebookFile AutherName :: "+facebookFile.getAuthor());
-                Log.e("TAG","facebookFile FileName :: "+facebookFile.getFilename());
-                Log.e("TAG","facebookFile Ext :: "+facebookFile.getExt());
-                Log.e("TAG","facebookFile SD :: "+facebookFile.getSdUrl());
-                Log.e("TAG","facebookFile HD :: "+facebookFile.getHdUrl());
-                Log.e("TAG","---------------------------------------");
-            }
-
-            @Override
-            protected void onExtractionFail(Exception error) {
-                Log.e("Error","Error :: "+error.getMessage());
-                error.printStackTrace();
-            }
-        };
-    }
-
-    private void showYouTubePlayer(String link) {
+    private void setUpYouTube(String link) {
+        mYouTubeDownloadURL = new YouTubeDownloadURL(requireContext(), link);
         YouTubePlayerView youTubePlayerView = requireView().findViewById(R.id.youtube_player_view);
         youTubePlayerView.setVisibility(View.VISIBLE);
         mYouTubePlayer = new YouTubePlayer(link, youTubePlayerView);
@@ -134,18 +139,20 @@ public class ClipInformationFragment extends Fragment {
         Runnable task = new Runnable() {
             @Override
             public void run() {
-                YouTubeDataAPI youTubeDataAPI = new YouTubeDataAPI(mYouTubePlayer.getClipID());
-                Video targetVideo = youTubeDataAPI.getData();
+                youTubeDataAPI = new YouTubeDataAPI(mYouTubePlayer.getClipID());
+                targetVideo = youTubeDataAPI.getData();
+
+                String title = targetVideo.getSnippet().getTitle();
+                Thumbnail videoThumbnail = targetVideo.getSnippet().getThumbnails().getHigh();
+                String viewCount = targetVideo.getStatistics().getViewCount().toString();
+                String description = targetVideo.getSnippet().getDescription();
                 handler.post(new Runnable() {
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void run() {
-                        mTitleTextView.setText(mTitleTextView.getText().toString() +
-                                targetVideo.getSnippet().getTitle().toString());
-                        mCounterViewTextView.setText(mCounterViewTextView.getText().toString() +
-                                targetVideo.getStatistics().getViewCount().toString());
-                        mDescriptionTextView.setText(mDescriptionTextView.getText().toString() +
-                                targetVideo.getSnippet().getDescription());
+                        mTitleTextView.setText(mTitleTextView.getText().toString() + title);
+                        mCounterViewTextView.setText(mCounterViewTextView.getText().toString() + viewCount);
+                        mDescriptionTextView.setText(mDescriptionTextView.getText().toString() + description);
                     }
                 });
             }
@@ -154,13 +161,43 @@ public class ClipInformationFragment extends Fragment {
     }
 
     private void updateUI() {
+        RadioGroup mQualityRadioGroup = requireView().findViewById(R.id.quality_radio_group);
+        Button mDownloadButton = requireView().findViewById(R.id.download_button);
+
         //clean field if was used
         mDescriptionTextView.setText("");
         mCounterViewTextView.setText("");
         mTitleTextView.setText("");
-        clip_layout.setVisibility(View.VISIBLE);
-        Animation emerge = AnimationUtils.loadAnimation(this.requireContext(), R.anim.emerge);
-        clip_layout.startAnimation(emerge);
+        for (int i = 0; i < mQualityRadioGroup.getChildCount(); i++) {
+            mQualityRadioGroup.removeViewAt(i);
+        }
+
+        mYouTubeDownloadURL.extract(new YouTubeDownloadUrlState() {
+            @Override
+            public void isOperationSuccessfully(String state) {
+                if (state.equals("SUCCESS")) {
+                    List<RadioButton> radioButtonList = mYouTubeDownloadURL.getRadioButtonsList();
+                    for (RadioButton button: radioButtonList){
+                        mQualityRadioGroup.addView(button);
+                        clip_layout.setVisibility(View.VISIBLE);
+                        Animation emerge = AnimationUtils.loadAnimation(requireContext(), R.anim.emerge);
+                        clip_layout.startAnimation(emerge);
+                        mDownloadButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (mQualityRadioGroup.getCheckedRadioButtonId() == -1){
+                                    Toast.makeText(requireContext(), "You have to choose download format", Toast.LENGTH_LONG).show();
+                                }else{
+                                mYouTubeDownloadURL.downloadVideo(mQualityRadioGroup.getCheckedRadioButtonId());
+                            }
+                        }});
+                    }
+                }
+                else if (state.equals("NO_SUCCESS")){
+                    Toast.makeText(requireContext(), "Cannot download data", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -189,4 +226,6 @@ public class ClipInformationFragment extends Fragment {
             mYouTubePlayer = null;
         }
     }
+
+
 }

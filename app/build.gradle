@@ -83,6 +83,7 @@ dependencies {
 
     //extractor
     implementation 'com.github.Ashusolanki:FacebookUrlExtractor:0.0.4'
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible

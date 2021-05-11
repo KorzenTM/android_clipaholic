@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.DownloadHistoryFragment">
+    android:orientation="horizontal">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/download_list_recycler_view"
+        android:layout_marginTop="15sp"
+        android:layout_marginBottom="15sp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello download history" />
+        android:layout_height="wrap_content" />
 
-</FrameLayout>
+
+</LinearLayout>
