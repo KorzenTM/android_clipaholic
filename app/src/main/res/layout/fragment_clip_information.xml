@@ -51,6 +51,27 @@
                 android:text="CHECK"
                 android:layout_centerHorizontal="true"
                 />
+
+            <ProgressBar
+                android:layout_below="@id/link_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/wait_for_info_progress_bar"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"
+                android:layout_margin="10sp"
+                />
+
+            <TextView
+                android:id="@+id/wait_text_view"
+                android:layout_below="@id/wait_for_info_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:text="Please wait..."
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -88,7 +109,6 @@
                 app:autoPlay="false"
                 app:showSeekBar="true"
                 app:showYouTubeButton="true"
-                android:visibility="gone"
                 />
 
             <TextView

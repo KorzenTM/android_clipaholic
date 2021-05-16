@@ -12,12 +12,10 @@
         android:id="@+id/thumbnail_image_view"
         android:layout_width="128sp"
         android:layout_margin="5sp"
-        android:layout_height="128sp"
-        tools:src="@mipmap/youtube_icon"
-        android:contentDescription="@string/video_thumbnail" />
+        android:layout_height="128sp" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -27,26 +25,47 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textStyle="bold"
+            android:text="Title:"
             android:textSize="20sp"
             android:layout_margin="5sp"
             android:textColor="@color/text_color" />
 
-        <Button
-            android:id="@+id/download_button"
+        <TextView
+            android:id="@+id/format_text_view_recycle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Format:"
             android:layout_margin="5sp"
-            android:backgroundTint="@color/button_background"
-            android:text="DOWNLOAD" />
+            android:textColor="@color/text_color" />
 
-        <Button
-            android:id="@+id/delete_from_list_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:backgroundTint="#ff1a1a"
-            android:text="DELETE FROM LIST" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/download_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/button_background"
+                android:text="DOWNLOAD"
+                android:textColor="@color/white"
+                tools:ignore="RtlHardcoded" />
+
+            <Button
+                android:id="@+id/delete_from_list_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="#ff1a1a"
+                android:layout_marginLeft="10dp"
+                android:text="@string/delete_from_list_button" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

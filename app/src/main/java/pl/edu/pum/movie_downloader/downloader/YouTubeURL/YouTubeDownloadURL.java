@@ -20,7 +20,7 @@ public class YouTubeDownloadURL {
     private final Context mContext;
     private SparseArray<YtFile> mYTFiles;
     private VideoMeta mMeta;
-    private final List<RadioButton> mRadioButtonsList = new ArrayList<RadioButton>();
+    private List<RadioButton> mRadioButtonsList = new ArrayList<RadioButton>();;
 
     public YouTubeDownloadURL(Context context, String link){
         this.mLink = link;
@@ -29,9 +29,8 @@ public class YouTubeDownloadURL {
 
     @SuppressLint("StaticFieldLeak")
     public void extract(YouTubeDownloadUrlState youTubeDownloadUrlState){
-
+        mRadioButtonsList.clear();
         new YouTubeExtractor(mContext) {
-
             @SuppressLint("SetTextI18n")
             @Override
             public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
@@ -52,11 +51,13 @@ public class YouTubeDownloadURL {
                     videoHeight = format.getHeight();
                     audioBitrate = format.getAudioBitrate();
                     newButton = new RadioButton(mContext);
+
                     if (videoHeight > 0) {
-                        newButton.setText("Video " + materialExtension + " " + videoHeight + "p");
+                        newButton.setText(("Video " + materialExtension + " " + videoHeight + "p").toUpperCase());
                     } else {
-                        newButton.setText("Audio " + materialExtension + " " + audioBitrate + "kb/s");
+                        newButton.setText(("Audio " + materialExtension + " " + audioBitrate + "kb/s").toUpperCase());
                     }
+
                     newButton.setId(itag);
                     mRadioButtonsList.add(newButton);
                 }

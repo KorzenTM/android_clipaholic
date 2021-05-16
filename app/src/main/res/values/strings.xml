@@ -16,4 +16,5 @@
     <string name="downloadButton">DOWNLOAD</string>
     <string name="add_to_listButton">ADD TO LIST</string>
     <string name="video_thumbnail">Video thumbnail</string>
+    <string name="delete_from_list_button">DELETE</string>
 </resources>

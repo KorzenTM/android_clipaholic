@@ -19,7 +19,8 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Movie_Downloader">
+        android:theme="@style/Theme.Movie_Downloader"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".activities.NavHostActivity"
             android:screenOrientation="portrait"
