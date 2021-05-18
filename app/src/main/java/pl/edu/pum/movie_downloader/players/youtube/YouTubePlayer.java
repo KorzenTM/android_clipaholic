@@ -3,8 +3,11 @@ package pl.edu.pum.movie_downloader.players.youtube;
 import android.util.Log;
 import android.view.View;
 
+import androidx.lifecycle.Lifecycle;
+
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerUtils;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,18 +17,23 @@ import java.util.regex.Pattern;
 
 public class YouTubePlayer {
     public static YouTubePlayerView youTubePlayerView = null;
-    private final String mYouTubeID;
+    private final Lifecycle mLifecycle;
+    private String mYouTubeID;
+    private com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer mYouTubePlayer;
 
-    public YouTubePlayer(String URL, YouTubePlayerView playerView) {
+    public YouTubePlayer(String URL, Lifecycle lifecycle) {
 
         this.mYouTubeID = getYouTubeId(URL);
-        youTubePlayerView = playerView;
+        this.mLifecycle = lifecycle;
+        mLifecycle.addObserver(youTubePlayerView);
     }
 
     public String getClipID()
     {
         return mYouTubeID;
     }
+
+    public void setClipID(String url) {this.mYouTubeID = getYouTubeId(url); }
 
     private String getYouTubeId(String youTubeUrl) {
         String pattern =
@@ -40,12 +48,13 @@ public class YouTubePlayer {
         return null;
     }
 
-    public void start() {
+    public void init() {
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
                 super.onReady(youTubePlayer);
-                youTubePlayer.loadVideo(mYouTubeID, 0);
+                mYouTubePlayer = youTubePlayer;
+                YouTubePlayerUtils.loadOrCueVideo(youTubePlayer, mLifecycle, mYouTubeID, 0f);
                 youTubePlayer.pause();
             }
 
@@ -57,9 +66,7 @@ public class YouTubePlayer {
         });
     }
 
-    public void release()
-    {
-        youTubePlayerView.release();
+    public void setNextVideo(){
+        YouTubePlayerUtils.loadOrCueVideo(mYouTubePlayer, mLifecycle, mYouTubeID, 0f);
     }
-
 }

@@ -10,9 +10,9 @@
     <string name="download_list">Download list</string>
     <string name="history">History</string>
     <string name="log_in">LOG IN</string>
-    <string name="title">Title:</string>
-    <string name="number_of_views">Number of views:</string>
-    <string name="description">Description:</string>
+    <string name="title">Title</string>
+    <string name="number_of_views">Number of views</string>
+    <string name="description">Description</string>
     <string name="downloadButton">DOWNLOAD</string>
     <string name="add_to_listButton">ADD TO LIST</string>
     <string name="video_thumbnail">Video thumbnail</string>

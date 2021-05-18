@@ -31,6 +31,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import pl.edu.pum.movie_downloader.R;
@@ -104,11 +105,7 @@ public class LoginFragment extends Fragment
 
                 if (email.isEmpty() || password.isEmpty())
                 {
-                    Toast.makeText(
-                            getContext(),
-                            "You have not entered your email or password."
-                            , Toast.LENGTH_LONG)
-                            .show();
+                    Snackbar.make(requireView(), "You have not entered your email or password.", Snackbar.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -142,11 +139,11 @@ public class LoginFragment extends Fragment
                                                 {
                                                     if (state.equals("EMAIL_SENT"))
                                                     {
-                                                        Toast.makeText(getContext(), "Verification E-mail has been sent again.", Toast.LENGTH_LONG).show();
+                                                        Snackbar.make(requireView(), "Verification E-mail has been sent again.", Snackbar.LENGTH_SHORT).show();
                                                     }
                                                     else
                                                     {
-                                                        Toast.makeText(getContext(), "Verification E-mail has been not sent. Try again.", Toast.LENGTH_LONG).show();
+                                                        Snackbar.make(requireView(), "Verification E-mail has been not sent. Try again.", Snackbar.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             });
@@ -296,7 +293,7 @@ public class LoginFragment extends Fragment
                     {
                         if (state.equals("SUCCESS_LOGIN_WITH_GOOGLE"))
                         {
-                            Toast.makeText(requireContext(), "Successfully login with Google Account", Toast.LENGTH_LONG).show();
+                            Snackbar.make(requireView(), account.getEmail() + ": successfully login with Google account", Snackbar.LENGTH_SHORT).show();
                             Navigation.findNavController(requireView()).navigate(R.id.action_logFragment_to_home_fragment);
                         }
                         else if (state.equals("NO_SUCCESS_LOGIN_WITH_GOOGLE"))

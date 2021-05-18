@@ -2,6 +2,7 @@ package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +25,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.adapters.AvailableSourcesRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.local.DBHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class HomeFragment extends Fragment
@@ -75,10 +78,26 @@ public class HomeFragment extends Fragment
         nextSectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DownloadListFragment.dbHandler = new DBHandler(requireContext());
+                Handler handler = new Handler();
+                Runnable task = new Runnable() {
+                    @Override
+                    public void run() {
+                        DownloadListFragment.getDownloadList();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                                        setNumber(DownloadListFragment.mVideoInformationList.size());
+
+                            }
+                        });
+                    }
+                };
+                new Thread(task).start();
                 Navigation.findNavController(requireView()).navigate(R.id.action_home_fragment_to_clip_information_fragment);
             }
         });
-
         return view;
     }
 

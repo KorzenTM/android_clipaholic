@@ -1,16 +1,15 @@
 package pl.edu.pum.movie_downloader.adapters;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -21,17 +20,18 @@ import java.net.URL;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.fragments.ClipInformationFragment;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
+import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
+import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
+import pl.edu.pum.movie_downloader.models.YouTubeDownloadListInformation;
 
 public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<DownloadListRecyclerViewAdapter.ViewHolder> {
     private final FragmentActivity mContext;
-    private List<Pair<String, String>> mClipInformationList;
-    private List<Pair<Integer, String>> mInformationToDownloadList;
+    public List<Object> mClipInformationList;
 
-    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<Pair<String, String>> clipInformationList, List<Pair<Integer, String>> informationToDownloadList) {
+    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<Object> clipInformationList) {
         this.mContext = context;
         this.mClipInformationList = clipInformationList;
-        this.mInformationToDownloadList = informationToDownloadList;
     }
 
     @NonNull
@@ -43,10 +43,14 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final String format = mClipInformationList.get(position).first;
-        final String title = mClipInformationList.get(position).second;
-        final String id = mInformationToDownloadList.get(position).second;
-        holder.bind(format, title, id);
+        Object obj = mClipInformationList.get(position);
+        if (obj.getClass() == YouTubeDownloadListInformation.class){
+            YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
+            final String format = information.getFormat();
+            final String title = information.getTitle();
+            final String id = information.getID();
+            holder.bind(format, title, id);
+        }
     }
 
     @Override
@@ -70,49 +74,54 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
             mDownloadButton = itemView.findViewById(R.id.download_button);
             mDeleteButton = itemView.findViewById(R.id.delete_from_list_button);
 
-            mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mClipInformationList.remove(getAdapterPosition());
-                    mInformationToDownloadList.remove(getAdapterPosition());
+            mDeleteButton.setOnClickListener(v -> {
+                Object obj = mClipInformationList.get(getAdapterPosition());
+                if (obj.getClass() == YouTubeDownloadListInformation.class){
+                    YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
+                    int iTag = information.getITag();
+                    DownloadListFragment.dbHandler.deleteYouTubeClip(mTitleTextView.getText().toString(),
+                            iTag);
+                    DownloadListFragment.getDownloadList();
                     notifyDataSetChanged();
+                    NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                            setNumber(mClipInformationList.size());
                 }
             });
 
-            mDownloadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int itag = mInformationToDownloadList.get(getAdapterPosition()).first;
-                    ClipInformationFragment.mYouTubeDownloadURL.downloadVideo(itag);
+            mDownloadButton.setOnClickListener(v -> {
+                Object obj = mClipInformationList.get(getAdapterPosition());
+                if (obj.getClass() == YouTubeDownloadListInformation.class){
+                    YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
+                    String link = information.getDownloadURL();
+                    String title = information.getTitle();
+                    String ext = information.getExtension();
+
+                    YouTubeDownloadURL youTubeDownloadURL = new YouTubeDownloadURL(mContext, link);
+                    youTubeDownloadURL.downloadVideoFromURL(link, title, ext);
                 }
             });
 
         }
 
         public void bind(String format, String title, String id) {
-            //Glide.with(mContext).load("http://img.youtube.com/vi/-OKrloDzGpU/mqdefault.jpg").into(mThumbnail);
             android.os.Handler handler = new Handler();
-            Runnable task = new Runnable() {
-                @Override
-                public void run() {
-                    try
-                    {
-                        String url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
-                        Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(mContext, "Added new clip to list", Toast.LENGTH_LONG).show();
-                                mThumbnail.setImageBitmap(bitmap);
-                                mFormatTextView.setText(mFormatTextView.getText().toString() + " " +  format);
-                                mTitleTextView.setText(mTitleTextView.getText().toString() + " " + title);
-                            }
-                        });
+            Runnable task = () -> {
+                try
+                {
+                    String url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+                    handler.post(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            mThumbnail.setImageBitmap(bitmap);
+                            mFormatTextView.setText(format);
+                            mTitleTextView.setText(title);
+                        }
+                    });
 
-                    }catch (Exception e){
-                        Toast.makeText(mContext, "Poszlo nie tak", Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             };
             new Thread(task).start();
@@ -120,7 +129,6 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
         @Override
         public void onClick(View v) {
-
 
         }
     }

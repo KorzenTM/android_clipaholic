@@ -25,6 +25,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -32,6 +33,7 @@ import java.util.Objects;
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class NavHostActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker
@@ -41,7 +43,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     private NavController navController;
     private NavigationView navigationView;
     private Alerts mAlerts;
-    private BottomNavigationView mBottomNavigationView;
+    public static BottomNavigationView mBottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -84,6 +86,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
                 if (destination.getId() == R.id.clip_information_fragment ||
                     destination.getId() == R.id.download_history_fragment ||
                     destination.getId() == R.id.download_list_fragment) {
+                    setNumberOfElementToDownload();
                     mBottomNavigationView.setVisibility(View.VISIBLE);
                 } else {
                     mBottomNavigationView.setVisibility(View.GONE);
@@ -112,6 +115,11 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
                 return true;
             }
         });
+    }
+
+    private void setNumberOfElementToDownload() {
+        mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                setNumber(DownloadListFragment.mVideoInformationList.size());
     }
 
     @Override
@@ -151,6 +159,8 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
                 FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
                 fireBaseAuthHandler.logOutUserAccount();
                 navController.navigate(R.id.logFragment);
+                View parentLayout = findViewById(android.R.id.content);
+                Snackbar.make(parentLayout, "Successfully logged out. See you later!", Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.settings:
                 Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();

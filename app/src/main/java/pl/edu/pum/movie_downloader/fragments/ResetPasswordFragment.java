@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
@@ -68,7 +70,7 @@ public class ResetPasswordFragment extends Fragment
                         {
                             if (state.equals("RESET_EMAIL_SENT"))
                             {
-                                Toast.makeText(getContext(), "Password reset E-mail has been sent.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(requireView(), "Password reset E-mail has been sent.", Snackbar.LENGTH_SHORT).show();
                                 Navigation.findNavController(ResetPasswordFragment.this.requireView()).navigate(R.id.action_reset_fragment_to_logFragment);
                             }
                             else if (state.equals("RESET_EMAIL_NOT_SENT"))
@@ -80,7 +82,7 @@ public class ResetPasswordFragment extends Fragment
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "You have not entered email.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(requireView(), "You have not entered email.", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });

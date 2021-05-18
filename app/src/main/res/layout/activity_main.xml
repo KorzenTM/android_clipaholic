@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bottom_menu_layout"
         app:menu="@menu/bottom_navigation_menu"
+        android:theme="@style/Theme.MaterialComponents"
         android:layout_gravity="bottom"
         app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"

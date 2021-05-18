@@ -11,8 +11,8 @@
     
     <ImageView
         android:id="@+id/source_icon_image_view"
-        android:layout_width="128sp"
-        android:layout_height="128sp"
+        android:layout_width="64sp"
+        android:layout_height="64sp"
         tools:src="@mipmap/vimeo_icon"
         android:layout_margin="10sp"/>
 

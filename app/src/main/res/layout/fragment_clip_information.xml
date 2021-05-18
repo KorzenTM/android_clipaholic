@@ -108,8 +108,7 @@
                 android:layout_margin="10sp"
                 app:autoPlay="false"
                 app:showSeekBar="true"
-                app:showYouTubeButton="true"
-                />
+                app:showYouTubeButton="true" />
 
             <TextView
                 android:layout_below="@id/youtube_player_view"
@@ -119,16 +118,25 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title"
                 android:textStyle="bold"
+                android:layout_centerHorizontal="true"
                 android:textSize="20sp"
                 android:textColor="@color/text_color"/>
 
+            <View
+                android:layout_below="@id/title_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line1"
+                android:background="@color/black"/>
+
             <TextView
-                android:layout_below="@id/youtube_player_view"
-                android:layout_toEndOf="@id/title_header"
+                android:layout_below="@id/line1"
                 android:layout_margin="5sp"
                 android:id="@+id/title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:textStyle="bold"
                 android:textSize="20sp" />
 
@@ -139,33 +147,51 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/number_of_views"
+                android:layout_centerHorizontal="true"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/text_color"/>
 
+            <View
+                android:layout_below="@id/view_counter_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line2"
+                android:background="@color/black"/>
+
             <TextView
-                android:layout_below="@id/title_text_view"
-                android:layout_toEndOf="@id/view_counter_header"
+                android:layout_below="@id/line2"
                 android:layout_margin="5sp"
                 android:id="@+id/view_counter_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:textStyle="bold"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_below="@id/view_counter_header"
+                android:layout_below="@id/view_counter_text_view"
                 android:layout_margin="5sp"
                 android:id="@+id/description_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/description"
                 android:textStyle="bold"
+                android:layout_centerHorizontal="true"
                 android:textSize="20sp"
                 android:textColor="@color/text_color"/>
 
-            <TextView
+            <View
                 android:layout_below="@id/description_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line3"
+                android:background="@color/black"/>
+
+            <TextView
+                android:layout_below="@id/line3"
                 android:layout_margin="5sp"
                 android:id="@+id/description_text_view"
                 android:layout_width="match_parent"
@@ -205,12 +231,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="5sp"
-                android:id="@+id/line2"
+                android:id="@+id/line5"
                 android:background="@color/black"/>
 
             <Button
                 android:id="@+id/download_button"
-                android:layout_below="@id/line2"
+                android:layout_below="@id/line5"
                 android:layout_toStartOf="@id/centerPoint"
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
@@ -228,7 +254,7 @@
             <Button
                 android:id="@+id/add_to_list_button"
                 android:layout_toEndOf="@id/download_button"
-                android:layout_below="@id/line2"
+                android:layout_below="@id/line5"
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
                 android:layout_margin="5sp"

@@ -27,6 +27,4 @@ public class Downloader {
         assert manager != null;
         manager.enqueue(request);
     }
-
-
 }
