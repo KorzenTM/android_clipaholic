@@ -41,10 +41,9 @@ Work Schedule:
   - Creating interface for selecting website from which video will be downloaded and possibility to enter URL
   - After successful check, display summary (Information about movie, video player)
   - Choice of recording format and quality
-  - Conversion to selected music format
   - Notification of successful download/conversion in notification panel
 * Report III(12.05):
-  - Play music file in application or via external applications
+  - Play music file via external applications
   - Creation of download history
   - Implementation of additional functionality like:
     - Sign in with Google account
