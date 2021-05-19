@@ -19,12 +19,10 @@ import java.util.List;
 import pl.edu.pum.movie_downloader.R;
 
 public class AvailableSourcesRecyclerViewAdapter extends RecyclerView.Adapter<AvailableSourcesRecyclerViewAdapter.ViewHolder> {
-    private final View mView;
     private final FragmentActivity mContext;
     private final List<Pair<Integer, String>>  mSources;
 
-    public AvailableSourcesRecyclerViewAdapter(View view, FragmentActivity context, List<Pair<Integer, String>>  sources) {
-        this.mView = view;
+    public AvailableSourcesRecyclerViewAdapter(FragmentActivity context, List<Pair<Integer, String>>  sources) {
         this.mContext = context;
         this.mSources = sources;
     }

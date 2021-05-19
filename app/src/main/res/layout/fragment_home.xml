@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,15 +14,14 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:layout_margin="15sp"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:textColor="@color/white" />
 
         <RelativeLayout
             android:background="@drawable/layout_rounded_background"
-            android:layout_below="@id/hello_user_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_margin="10sp">
 
             <TextView
@@ -31,11 +30,11 @@
                 android:layout_height="wrap_content"
                 android:text="Supported video sources"
                 android:textAlignment="center"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
                 android:textStyle="bold"
                 android:textColor="#4169E1"
                 android:layout_centerHorizontal="true"
-                android:textSize="30sp"/>
+                android:textSize="18sp"/>
 
             <TextView
                 android:id="@+id/most_popular_text_view"
@@ -43,10 +42,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="The most popular choices"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
                 android:textStyle="italic"
                 android:textColor="#4169E1"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
 
             <View
                 android:id="@+id/line"
@@ -76,13 +75,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/line2"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
+                android:textSize="14sp"
                 android:backgroundTint="@color/button_background"
                 android:layout_centerHorizontal="true"
                 android:text="Go to next section"/>
 
         </RelativeLayout>
     </RelativeLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 

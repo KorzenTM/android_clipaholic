@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,8 +10,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20sp">
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:id="@+id/get_link_layout"
@@ -23,12 +22,12 @@
             <TextView
                 android:id="@+id/placeholder_1"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="10sp"
-                android:text="Put the link here"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:text="@string/put_the_link_here"
                 android:textStyle="bold"
                 android:layout_centerHorizontal="true"
-                android:textSize="30sp"
+                android:textSize="18sp"
                 android:textColor="@color/text_color"/>
 
             <EditText
@@ -36,7 +35,7 @@
                 android:layout_below="@id/placeholder_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
                 android:singleLine="true"
                 android:inputType="text"
                 android:hint="@string/link_example"
@@ -47,8 +46,9 @@
                 android:id="@+id/check_link_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
                 android:backgroundTint="#2E8B57"
+                android:textSize="14sp"
                 android:text="CHECK"
                 android:layout_centerHorizontal="true"
                 />
@@ -60,7 +60,7 @@
                 android:id="@+id/wait_for_info_progress_bar"
                 android:layout_centerHorizontal="true"
                 android:visibility="invisible"
-                android:layout_margin="10sp"
+                android:layout_margin="5sp"
                 />
 
             <TextView
@@ -69,9 +69,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_color"
-                android:text="Please wait..."
+                android:layout_margin="5sp"
+                android:text="@string/please_wait"
                 android:layout_centerHorizontal="true"
-                android:textSize="20sp"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:visibility="gone"/>
         </RelativeLayout>
 
@@ -80,12 +82,9 @@
             android:layout_below="@id/get_link_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp"
-            android:layout_marginLeft="10sp"
-            android:layout_marginRight="10sp"
-            android:layout_marginBottom="10sp"
+            android:layout_margin="10sp"
             android:background="@drawable/layout_rounded_background"
-            android:visibility="gone"
+            android:visibility="invisible"
             tools:visibility="visible"
             >
 
@@ -96,7 +95,7 @@
                 android:id="@+id/your_clip_header"
                 android:textAlignment="center"
                 android:layout_margin="5sp"
-                android:textSize="35sp"
+                android:textSize="18sp"
                 android:text="Is that what you had in mind?"
                 android:textStyle="bold"
                 android:textColor="@color/text_color"/>
@@ -107,8 +106,7 @@
                 android:id="@+id/youtube_player_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10sp"
-                app:autoPlay="false"
+                android:layout_margin="5sp"
                 app:showSeekBar="true"
                 app:showYouTubeButton="true" />
 
@@ -121,7 +119,7 @@
                 android:text="@string/title"
                 android:textStyle="bold"
                 android:layout_centerHorizontal="true"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_color"/>
 
             <View
@@ -136,11 +134,12 @@
                 android:layout_below="@id/line1"
                 android:layout_margin="5sp"
                 android:id="@+id/title_text_view"
+                android:textColor="@color/black"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:textStyle="bold"
-                android:textSize="20sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_below="@id/title_text_view"
@@ -151,7 +150,7 @@
                 android:text="@string/number_of_views"
                 android:layout_centerHorizontal="true"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_color"/>
 
             <View
@@ -168,9 +167,10 @@
                 android:id="@+id/view_counter_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="20sp" />
+                android:layout_centerHorizontal="true"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_below="@id/view_counter_text_view"
@@ -181,7 +181,7 @@
                 android:text="@string/description"
                 android:textStyle="bold"
                 android:layout_centerHorizontal="true"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_color"/>
 
             <View
@@ -198,8 +198,9 @@
                 android:id="@+id/description_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="20sp" />
+                android:textSize="14sp" />
 
             <View
                 android:layout_below="@id/description_text_view"
@@ -217,7 +218,7 @@
                 android:layout_below="@id/line"
                 android:layout_margin="5sp"
                 android:text="Choose quality"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_color"/>
 
@@ -243,6 +244,7 @@
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
                 android:layout_margin="5sp"
+                android:textSize="14sp"
                 android:layout_height="wrap_content"
                 android:text="@string/downloadButton"/>
 
@@ -259,10 +261,11 @@
                 android:layout_below="@id/line5"
                 android:backgroundTint="@color/button_background"
                 android:layout_width="wrap_content"
+                android:textSize="14sp"
                 android:layout_margin="5sp"
                 android:layout_height="wrap_content"
                 android:text="@string/add_to_listButton"/>
 
         </RelativeLayout>
     </RelativeLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>

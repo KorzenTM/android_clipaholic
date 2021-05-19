@@ -1,7 +1,6 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,11 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,41 +25,32 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
-public class RegisterFragment extends Fragment
-{
+public class RegisterFragment extends Fragment {
     private EditText mNickEditView;
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private EditText mRepeatedPasswordEditText;
     private Button mRegisterButton;
     private ProgressBar mRegisterProgressBar;
-    private CheckBox mShowPasswordsCheckBox;
-    private static final int PASSWORD_LENGTH = 8;
-    List<EditText> mForm = new ArrayList<EditText>();
+    final List<EditText> mForm = new ArrayList<>();
     private Alerts mAlerts;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
@@ -72,78 +60,54 @@ public class RegisterFragment extends Fragment
         mRepeatedPasswordEditText = view.findViewById(R.id.repeat_password);
         mRegisterButton = view.findViewById(R.id.register_button);
         mRegisterProgressBar = view.findViewById(R.id.wait_for_register_bar);
-        mShowPasswordsCheckBox = view.findViewById(R.id.show_passwords_checkbox);
+        CheckBox mShowPasswordsCheckBox = view.findViewById(R.id.show_passwords_checkbox);
         mAlerts = new Alerts(requireContext(), requireActivity());
 
         //get all EditText from register form
         RelativeLayout layout = view.findViewById(R.id.register_form_layout);
-        for (int i = 0; i < layout.getChildCount(); i++)
-        {
-            if (layout.getChildAt(i) instanceof EditText)
-            {
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            if (layout.getChildAt(i) instanceof EditText) {
                 EditText test = (EditText )layout.getChildAt(i);
                 mForm.add(test);
             }
         }
         addClearButton(mForm);
 
-        mRegisterButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                String nickname = mNickEditView.getText().toString();
-                String email = mEmailEditText.getText().toString();
-                String password = mPasswordEditText.getText().toString();
-                String repeatedPassword = mRepeatedPasswordEditText.getText().toString();
+        mRegisterButton.setOnClickListener(v -> {
+            String nickname = mNickEditView.getText().toString();
+            String email = mEmailEditText.getText().toString();
+            String password = mPasswordEditText.getText().toString();
+            String repeatedPassword = mRepeatedPasswordEditText.getText().toString();
 
-                if (ifEmptyField())
-                {
-                    if (checkPassword(password, repeatedPassword))
-                    {
-                        setPasswordFieldState("Correct password", 0);
-                        mRegisterButton.setVisibility(View.INVISIBLE);
-                        mRegisterProgressBar.setVisibility(View.VISIBLE);
-                        FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
-                        fireBaseAuthHandler.createNewUser(nickname, email, password, new FireBaseAuthState()
-                        {
-                            @Override
-                            public void isOperationSuccessfully(String state)
-                            {
-                                if (state.equals("NEW_USER_CREATED"))
-                                {
-                                    Snackbar.make(requireView(), "Verification E-mail has been sent.", Snackbar.LENGTH_SHORT).show();
-                                    Navigation.findNavController(RegisterFragment.this.requireView()).navigate(R.id.action_registerFragment_to_logFragment);
-                                }
-                                else if (state.equals("NEW_USER_NOT_CREATED"))
-                                {
-                                    mRegisterButton.setVisibility(View.VISIBLE);
-                                    mRegisterProgressBar.setVisibility(View.INVISIBLE);
-                                    mAlerts.showErrorAlert();
-                                }
+            if (ifEmptyField()) {
+                if (checkPassword(password, repeatedPassword)) {
+                    setPasswordFieldState("Correct password", 0);
+                    mRegisterButton.setVisibility(View.INVISIBLE);
+                    mRegisterProgressBar.setVisibility(View.VISIBLE);
+                    FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+                    fireBaseAuthHandler.createNewUser(nickname, email, password, state -> {
+                        if (state.equals("NEW_USER_CREATED")) {
+                            Snackbar.make(requireView(), "Verification E-mail has been sent.", Snackbar.LENGTH_SHORT).show();
+                            Navigation.findNavController(RegisterFragment.this.requireView()).navigate(R.id.action_registerFragment_to_logFragment);
+                        }
+                        else if (state.equals("NEW_USER_NOT_CREATED")) {
+                            mRegisterButton.setVisibility(View.VISIBLE);
+                            mRegisterProgressBar.setVisibility(View.INVISIBLE);
+                            mAlerts.showErrorAlert();
+                        }
 
-                            }
-                        });
-                    }
+                    });
                 }
             }
         });
 
-        mShowPasswordsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                if (buttonView.isChecked())
-                {
-                    mPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    mRepeatedPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else
-                {
-                    mPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    mRepeatedPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                }
+        mShowPasswordsCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (buttonView.isChecked()) {
+                mPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                mRepeatedPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            } else {
+                mPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                mRepeatedPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
             }
         });
         return view;
@@ -153,105 +117,76 @@ public class RegisterFragment extends Fragment
     private void addClearButton(List<EditText> form)
     {
         Drawable default_edit_text_theme = mForm.get(0).getBackground(); //just handle default theme of edittext to change
-        for (EditText edt: form)
-        {
-            edt.addTextChangedListener(new TextWatcher()
-            {
+        for (EditText edt: form) {
+            edt.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after)
-                {
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
                 }
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count)
-                {
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
                     edt.setBackground(default_edit_text_theme);
                 }
 
                 @Override
-                public void afterTextChanged(Editable s)
-                {
-                    if (s.length() > 0)
-                    {
+                public void afterTextChanged(Editable s) {
+                    if (s.length() > 0) {
                         edt.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0, R.drawable.ic_baseline_clear_24,0);
-                    }
-                    else
-                    {
+                    } else {
                         edt.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0, 0,0);
                     }
                 }
             });
 
-            edt.setOnTouchListener(new View.OnTouchListener()
-            {
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onTouch(View v, MotionEvent event)
-                {
-                    if (event.getAction() == MotionEvent.ACTION_UP)
-                    {
-                        if (edt.getCompoundDrawables()[2] != null)
-                        {
-                            if(event.getX() >= (edt.getRight()- edt.getLeft() - edt.getCompoundDrawables()[2].getBounds().width()))
-                            {
-                                edt.setText("");
-                            }
+            edt.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (edt.getCompoundDrawables()[2] != null) {
+                        if(event.getX() >= (edt.getRight()- edt.getLeft() - edt.getCompoundDrawables()[2].getBounds().width())) {
+                            edt.setText("");
                         }
                     }
-                    return false;
                 }
+                return false;
             });
-
         }
     }
 
-    private boolean ifEmptyField()
-    {
+    private boolean ifEmptyField() {
         boolean isEmpty = true;
-        for (EditText editText : mForm)
-        {
-            if (editText.getText().toString().isEmpty())
-            {
+        for (EditText editText : mForm) {
+            if (editText.getText().toString().isEmpty()) {
                 editText.setError("This field cannot be blank");
                 editText.setBackgroundResource(R.drawable.error_edit_text_background);
                 isEmpty = false;
-            }
-            else
-            {
+            } else {
                 editText.setBackgroundResource(R.drawable.confirm_edit_text_background);
             }
         }
         return isEmpty;
     }
 
-    private boolean checkPassword(String password, String repeatedPassword)
-    {
-        if (!password.equals(repeatedPassword))
-        {
+    private boolean checkPassword(String password, String repeatedPassword) {
+        if (!password.equals(repeatedPassword)) {
             setPasswordFieldState("Password didn't match", 1);
             return false;
         }
         String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         boolean isCorrect = password.matches(regexp);
 
-        if (!isCorrect)
-        {
+        if (!isCorrect) {
             setPasswordFieldState("Password does not meet the requirements", 1);
         }
         return isCorrect;
     }
 
-    private void setPasswordFieldState(String msg, int state)
-    {
-        if (state == 0)
-        {
+    private void setPasswordFieldState(String msg, int state) {
+        if (state == 0) {
             mPasswordEditText.setBackgroundResource(R.drawable.confirm_edit_text_background);
             mRepeatedPasswordEditText.setBackgroundResource(R.drawable.confirm_edit_text_background);
             Log.d("PASSWORD", msg);
         }
-        else if (state == 1)
-        {
+        else if (state == 1) {
             mPasswordEditText.setBackgroundResource(R.drawable.error_edit_text_background);
             mRepeatedPasswordEditText.setBackgroundResource(R.drawable.error_edit_text_background);
             mRepeatedPasswordEditText.setError(msg);
@@ -259,8 +194,7 @@ public class RegisterFragment extends Fragment
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         mRegisterButton.setVisibility(View.VISIBLE);
         mRegisterProgressBar.setVisibility(View.INVISIBLE);

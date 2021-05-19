@@ -3,12 +3,8 @@ package pl.edu.pum.movie_downloader.downloader.YouTubeURL;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.SparseArray;
-import android.view.View;
 import android.widget.RadioButton;
 
-import com.google.gson.annotations.Expose;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +15,11 @@ import at.huber.youtubeExtractor.YtFile;
 import pl.edu.pum.movie_downloader.downloader.Downloader;
 
 public class YouTubeDownloadURL {
-    private String mLink;
+    private final String mLink;
     private final Context mContext;
     private SparseArray<YtFile> mYTFiles;
     private VideoMeta mMeta;
-    private List<RadioButton> mRadioButtonsList = new ArrayList<RadioButton>();
-    private String mDownloadURL;
-    private String mExtension;
+    private final List<RadioButton> mRadioButtonsList = new ArrayList<>();
 
     public YouTubeDownloadURL(Context context, String link){
         this.mLink = link;
@@ -58,11 +52,12 @@ public class YouTubeDownloadURL {
                     audioBitrate = format.getAudioBitrate();
                     newButton = new RadioButton(mContext);
                     newButton.setId(itag);
+                    newButton.setTextSize(14);
 
                     if (videoHeight > 0) {
-                        newButton.setText(("Video " + materialExtension + " " + videoHeight + "p").toUpperCase());
+                        newButton.setText(("Video " + materialExtension + " " + videoHeight + "p"));
                     } else {
-                        newButton.setText(("Audio " + materialExtension + " " + audioBitrate + "kb/s").toUpperCase());
+                        newButton.setText(("Audio " + materialExtension + " " + audioBitrate + "kb/s"));
                     }
                     mRadioButtonsList.add(newButton);
                 }

@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_header"
     android:layout_width="match_parent"
     android:layout_height="160dp"
     android:background="@color/nav_header_background"
@@ -15,7 +14,6 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/nav_user_avatar_imageView"
         android:layout_width="64dp"
         android:layout_height="64dp"
         app:srcCompat="@mipmap/person_icon" />
@@ -26,7 +24,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="16sp"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         />
 
@@ -34,7 +32,7 @@
         android:id="@+id/nav_email_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textColor="@color/black"
         android:textStyle="italic"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:visibility="gone"
         tools:visibility="visible"/>

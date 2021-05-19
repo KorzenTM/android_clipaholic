@@ -42,7 +42,6 @@ import pl.edu.pum.movie_downloader.viemodel.PageViewModel;
 
 public class ClipInformationFragment extends Fragment {
     private PageViewModel pageViewModel;
-
     private EditText mLinkEditText;
     private YouTubePlayer mYouTubePlayer = null;
     private TextView mTitleTextView;
@@ -53,10 +52,10 @@ public class ClipInformationFragment extends Fragment {
     private Button mCheckLinkButton;
     private RadioGroup mQualityRadioGroup;
     private RelativeLayout mClipLayout;
-
     public  YouTubeDownloadURL mYouTubeDownloadURL;
     private YouTubeDataAPI mYouTubeDataAPI;
     private Video mTargetVideo = null;
+    private static int RequestForDataCounter = 0;
 
     public ClipInformationFragment() {
         // Required empty public constructor
@@ -72,8 +71,6 @@ public class ClipInformationFragment extends Fragment {
                 Navigation.findNavController(requireView()).navigate(R.id.home_fragment);
             }
         });
-
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -104,7 +101,7 @@ public class ClipInformationFragment extends Fragment {
                     System.out.println("to jest link z facebooczka :)");
                 }
                 else if (link.contains("youtube")) {
-                    setUpYouTube(link);
+                    initYouTube(link);
                 }
                 else if (link.contains("vimeo")) {
                     Toast.makeText(requireContext(), "Vimeo", Toast.LENGTH_SHORT).show();
@@ -206,20 +203,24 @@ public class ClipInformationFragment extends Fragment {
                 integer -> YouTubePlayer.youTubePlayerView.setVisibility(integer));
     }
 
-    private void setUpYouTube(String link) {
+    private void initYouTube(String link) {
         mYouTubeDownloadURL = new YouTubeDownloadURL(requireContext(), link);
+        setUpYouTubePlayer(link);
+        getInformationAboutYouTubeClipFromURL();
+        getFormatsFromYouTubeUrl();
+    }
+
+    private void setUpYouTubePlayer(String link){
         YouTubePlayer.youTubePlayerView.setVisibility(View.VISIBLE);
         if (mYouTubePlayer == null){
             mYouTubePlayer = new YouTubePlayer(link, getLifecycle());
             Runnable task1 = () -> mYouTubePlayer.init();
-
             new Thread(task1).start();
         }else {
             mYouTubePlayer.setClipID(link);
             Runnable task2 = () -> mYouTubePlayer.setNextVideo();
             new Thread(task2).start();
         }
-        getInformationAboutYouTubeClipFromURL();
     }
 
     private void getInformationAboutYouTubeClipFromURL() {
@@ -231,11 +232,9 @@ public class ClipInformationFragment extends Fragment {
             String viewCount = mTargetVideo.getStatistics().getViewCount().toString();
             String description = mTargetVideo.getSnippet().getDescription();
             handler.post(() -> {
-                updateUI();
                 mTitleTextView.setText(mTitleTextView.getText().toString() + title);
                 mCounterViewTextView.setText(mCounterViewTextView.getText().toString() + viewCount);
                 mDescriptionTextView.setText(mDescriptionTextView.getText().toString() + description);
-                getFormatsFromYouTubeUrl();
             });
         };
         new Thread(task).start();
@@ -250,27 +249,29 @@ public class ClipInformationFragment extends Fragment {
                     mQualityRadioGroup.addView(button);
                 }
                 setWaitProgressVisibility(View.GONE);
+                updateUI();
             }
             else if (state.equals("NO_SUCCESS")){
-                mQualityRadioGroup.removeAllViews();
-                Snackbar snackbar = Snackbar
-                        .make(requireView(), "Failed to download the data.", Snackbar.LENGTH_LONG)
-                        .setAction("RETRY", view -> setUpYouTube(mLinkEditText.getText().toString()));
-                snackbar.setActionTextColor(Color.RED);
-                snackbar.show();
-                setWaitProgressVisibility(View.GONE);
+                RequestForDataCounter++;
+                if (RequestForDataCounter > 3){
+                    mQualityRadioGroup.removeAllViews();
+                    Snackbar snackbar = Snackbar
+                            .make(requireView(), "Failed to download the data.", Snackbar.LENGTH_LONG)
+                            .setAction("RETRY", view -> initYouTube(mLinkEditText.getText().toString()));
+                    snackbar.setActionTextColor(Color.RED);
+                    snackbar.show();
+                    setWaitProgressVisibility(View.GONE);
+
+                }else{
+                    getFormatsFromYouTubeUrl();
+                }
             }
         });
     }
 
     private void updateUI() {
-        //clean field if was used
-        mTitleTextView.setText("");
-        mCounterViewTextView.setText("");
-        mDescriptionTextView.setText("");
-
-        mClipLayout.setVisibility(View.VISIBLE);
         Animation emerge = AnimationUtils.loadAnimation(requireContext(), R.anim.emerge);
+        mClipLayout.setVisibility(View.VISIBLE);
         mClipLayout.startAnimation(emerge);
     }
 

@@ -21,7 +21,6 @@
             <ImageView
                 android:id="@+id/thumbnail_image_view"
                 android:layout_width="128sp"
-                android:layout_margin="15sp"
                 android:layout_height="64sp" />
 
             <LinearLayout
@@ -35,9 +34,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="3sp"
                     android:backgroundTint="@color/button_background"
-                    android:text="DOWNLOAD"
+                    android:text="@string/download"
                     android:textColor="@color/white"
                     tools:ignore="RtlHardcoded" />
 
@@ -56,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="#ff1a1a"
-                android:layout_margin="3sp"
                 android:text="@string/delete_from_list_button" />
 
         </LinearLayout>
@@ -70,64 +67,60 @@
                 android:id="@+id/download_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/check_to_download"
                 android:layoutDirection="rtl"
-                android:layout_gravity="right"/>
+                android:layout_gravity="right"
+                tools:ignore="RtlHardcoded" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/title_header_recycle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textStyle="bold"
                     android:text="Title: "
-                    android:textSize="20sp"
-                    android:layout_margin="5sp"
-                    android:textColor="@color/text_color" />
+                    android:textSize="14sp"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/title_text_view_recycle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
                     android:layout_margin="5sp"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/format_header_recycler_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textStyle="bold"
-                    android:text="Format: "
-                    android:textSize="20sp"
-                    android:layout_margin="5sp"
-                    android:textColor="@color/text_color" />
+                    android:text="@string/format"
+                    android:textSize="14sp"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/format_text_view_recycle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
                     android:layout_margin="5sp"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/black" />
 
             </LinearLayout>
-
         </LinearLayout>
 </LinearLayout>
