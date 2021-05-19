@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/download_list_recycler_view"
-        android:layout_marginTop="15sp"
-        android:layout_marginBottom="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

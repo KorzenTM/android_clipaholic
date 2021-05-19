@@ -22,6 +22,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_YT_ITAG = "yt_iTag";
     public static final String COLUMN_YT_DOWNLOAD_LINK = "yt_download_link";
     public static final String COLUMN_YT_CLIP_EXTENSION= "yt_clip_extension";
+    public static final String COLUMN_YT_LINK = "yt_link";
 
 
     public DBHandler(@Nullable Context context) {
@@ -46,6 +47,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 COLUMN_YT_DOWNLOAD_LINK +
                 " TEXT," +
                 COLUMN_YT_CLIP_EXTENSION +
+                " TEXT," +
+                COLUMN_YT_LINK +
                 " TEXT" +
                 ")";
         db.execSQL(CREATE_DOWNLOAD_LIST_TABLE);
@@ -71,6 +74,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_YT_ITAG, information.getITag());
         values.put(COLUMN_YT_DOWNLOAD_LINK, information.getDownloadURL());
         values.put(COLUMN_YT_CLIP_EXTENSION, information.getExtension());
+        values.put(COLUMN_YT_LINK, information.getLink());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_DOWNLOAD_LIST, null, values);
         db.close();

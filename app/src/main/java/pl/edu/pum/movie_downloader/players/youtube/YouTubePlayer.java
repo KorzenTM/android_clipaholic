@@ -67,6 +67,8 @@ public class YouTubePlayer {
     }
 
     public void setNextVideo(){
-        YouTubePlayerUtils.loadOrCueVideo(mYouTubePlayer, mLifecycle, mYouTubeID, 0f);
+        if (mYouTubePlayer != null){
+            YouTubePlayerUtils.loadOrCueVideo(mYouTubePlayer, mLifecycle, mYouTubeID, 0f);
+        }
     }
 }

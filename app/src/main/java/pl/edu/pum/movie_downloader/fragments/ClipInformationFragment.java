@@ -120,11 +120,14 @@ public class ClipInformationFragment extends Fragment {
 
         Button mAddToListButton = view.findViewById(R.id.add_to_list_button);
         mAddToListButton.setOnClickListener(v -> {
-            if (mTargetVideo != null && mQualityRadioGroup.getCheckedRadioButtonId() != -1){
+            if (mTargetVideo != null &&
+                    mQualityRadioGroup.getCheckedRadioButtonId() != -1 &&
+                    !mLinkEditText.getText().toString().isEmpty()){
                 int selectedFormat = mQualityRadioGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = view.findViewById(selectedFormat);
                 int itag = mQualityRadioGroup.getCheckedRadioButtonId();
 
+                String link = mLinkEditText.getText().toString();
                 String title = mTargetVideo.getSnippet().getTitle().replace("\"", "");
                 String format = radioButton.getText().toString();
                 String id = mYouTubePlayer.getClipID();
@@ -133,7 +136,7 @@ public class ClipInformationFragment extends Fragment {
 
                 YouTubeDownloadListInformation youTubeDownloadListInformation =
                         new YouTubeDownloadListInformation(title, format, id,
-                                itag, url, ext);
+                                itag, url, ext, link);
                 Handler handler = new Handler();
                 Runnable task = () -> {
                     DownloadListFragment.dbHandler.addYouTubeClip(youTubeDownloadListInformation);
@@ -249,6 +252,7 @@ public class ClipInformationFragment extends Fragment {
                 setWaitProgressVisibility(View.GONE);
             }
             else if (state.equals("NO_SUCCESS")){
+                mQualityRadioGroup.removeAllViews();
                 Snackbar snackbar = Snackbar
                         .make(requireView(), "Failed to download the data.", Snackbar.LENGTH_LONG)
                         .setAction("RETRY", view -> setUpYouTube(mLinkEditText.getText().toString()));
