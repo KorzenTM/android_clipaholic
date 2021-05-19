@@ -10,8 +10,8 @@ import pl.edu.pum.movie_downloader.R;
 
 public class Alerts
 {
-    private Context mContext;
-    private Activity mActivity;
+    private final Context mContext;
+    private final Activity mActivity;
     private AlertDialog alertDialog;
 
     public Alerts(Context context, Activity activity)

@@ -4,4 +4,18 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="link_example"><![CDATA[Example: https://www.youtube.com/watch?v=LUO5qhpD2pA&t=1792s]]></string>
+    <string name="home">Home</string>
+    <string name="download_list">Download list</string>
+    <string name="history">History</string>
+    <string name="log_in">LOG IN</string>
+    <string name="title">Title</string>
+    <string name="number_of_views">Number of views</string>
+    <string name="description">Description</string>
+    <string name="downloadButton">DOWNLOAD</string>
+    <string name="add_to_listButton">ADD TO LIST</string>
+    <string name="video_thumbnail">Video thumbnail</string>
+    <string name="delete_from_list_button">DELETE</string>
+    <string name="check_to_download">Check to download.</string>
 </resources>

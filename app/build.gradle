@@ -5,10 +5,13 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+    buildFeatures {
+        viewBinding = true
+    }
 
     defaultConfig {
         applicationId "pl.edu.pum.movie_downloader"
-        minSdkVersion 29
+        minSdkVersion 27
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -45,6 +48,7 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.8.0')
@@ -76,4 +80,27 @@ dependencies {
 
     // Jetpack Compose Integration
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha09"
+
+    //players
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
+    implementation 'com.devbrackets.android:exomedia:4.0.0'
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev181-1.22.0'
+
+    //extractor
+    implementation 'com.github.Ashusolanki:FacebookUrlExtractor:0.0.4'
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:25.0.1'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'pub.devrel:easypermissions:0.3.0'
+    implementation('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation('com.google.apis:google-api-services-youtube:v3-rev183-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

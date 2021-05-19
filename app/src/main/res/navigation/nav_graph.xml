@@ -8,8 +8,8 @@
 
     <fragment
         android:id="@+id/logFragment"
-        tools:layout="@layout/log_fragment"
-        android:name="pl.edu.pum.movie_downloader.fragments.LogFragment"
+        tools:layout="@layout/fragment_login"
+        android:name="pl.edu.pum.movie_downloader.fragments.LoginFragment"
         android:label="Clipaholic" >
         <action
             android:id="@+id/action_logFragment_to_registerFragment"
@@ -27,12 +27,16 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_logFragment_to_reset_fragment"
-            app:destination="@id/reset_fragment" />
+            app:destination="@id/reset_fragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="pl.edu.pum.movie_downloader.fragments.RegisterFragment"
-        tools:layout="@layout/register_fragment"
+        tools:layout="@layout/fragment_register"
         android:label="Clipaholic" >
         <action
             android:id="@+id/action_registerFragment_to_logFragment"
@@ -46,20 +50,82 @@
         android:id="@+id/home_fragment"
         android:name="pl.edu.pum.movie_downloader.fragments.HomeFragment"
         android:label="Clipaholic"
-        tools:layout="@layout/home_fragment" >
+        tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_home_fragment_to_logFragment"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_home_fragment_to_clip_information_fragment"
+            app:destination="@id/clip_information_fragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment
         android:id="@+id/reset_fragment"
         android:name="pl.edu.pum.movie_downloader.fragments.ResetPasswordFragment"
         android:label="Clipaholic"
-        tools:layout="@layout/reset_password_fragment" >
+        tools:layout="@layout/fragment_reset_password" >
         <action
             android:id="@+id/action_reset_fragment_to_logFragment"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/clip_information_fragment"
+        android:name="pl.edu.pum.movie_downloader.fragments.ClipInformationFragment"
+        android:label="Clipaholic"
+        tools:layout="@layout/fragment_clip_information">
+        <action
+            android:id="@+id/action_clip_information_fragment_to_home_fragment"
+            app:destination="@id/home_fragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action
+            android:id="@+id/action_clip_information_fragment_to_logFragment"
+            app:destination="@id/logFragment" />
+        <action
+            android:id="@+id/action_clip_information_fragment_to_download_list_fragment"
+            app:destination="@id/download_list_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/download_list_fragment"
+        android:name="pl.edu.pum.movie_downloader.fragments.DownloadListFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_download_list">
+        <action
+            android:id="@+id/action_download_list_fragment_to_logFragment"
+            app:destination="@id/logFragment" />
+        <action
+            android:id="@+id/action_download_list_fragment_to_home_fragment"
+            app:destination="@id/home_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/download_history_fragment"
+        android:name="pl.edu.pum.movie_downloader.fragments.DownloadHistoryFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_download_history">
+        <action
+            android:id="@+id/action_download_history_fragment_to_logFragment"
+            app:destination="@id/logFragment" />
+        <action
+            android:id="@+id/action_download_history_fragment_to_home_fragment"
+            app:destination="@id/home_fragment" />
+    </fragment>
+
 
 
 </navigation>

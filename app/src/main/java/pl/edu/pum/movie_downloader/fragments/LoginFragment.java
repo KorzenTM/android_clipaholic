@@ -1,7 +1,9 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,63 +24,76 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.jetbrains.annotations.NotNull;
-
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.alerts.AlertDialogState;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
-public class LogFragment extends Fragment
+public class LoginFragment extends Fragment
 {
     private Button mLogInButton;
     private TextView mRegisterTextView;
     private TextView mForgotPasswordTextView;
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
-    private ImageButton mGoogleSignImageButton;
-    private ImageButton mFacebookSignImageButton;
     private ProgressBar mLoginProgressBar;
     private Alerts mAlerts;
+    private SignInButton mGoogleSignInButton;
+    GoogleSignInOptions mGoogleSignInOptions;
+    GoogleSignInClient mGoogleSignInClient;
+    private static final String TAG = "GoogleActivity";
+    private static final int RC_SIGN_IN = 9001;
 
     @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-    }
-
-
-        @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        mAlerts = new Alerts(getContext(), requireActivity());
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                mAlerts.showExitFromApplicationAlert();
+            }
+        });
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.log_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+
 
         mLogInButton = view.findViewById(R.id.login_button);
         mRegisterTextView = view.findViewById(R.id.register_text_view);
         mForgotPasswordTextView = view.findViewById(R.id.forgot_password_text_view);
         mEmailEditText = view.findViewById(R.id.email_field);
         mPasswordEditText = view.findViewById(R.id.password_field);
-        mGoogleSignImageButton = view.findViewById(R.id.google_login_button);
-        mFacebookSignImageButton = view.findViewById(R.id.facebook_login_button);
         mLoginProgressBar = view.findViewById(R.id.wait_for_login_progress_bar);
-        mAlerts = new Alerts(getContext(), requireActivity());
+        mGoogleSignInButton = view.findViewById(R.id.google_sing_in_button);
+
+        //configure google sign in
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), mGoogleSignInOptions);
 
         mLogInButton.setOnClickListener(new View.OnClickListener()
         {
@@ -91,11 +105,7 @@ public class LogFragment extends Fragment
 
                 if (email.isEmpty() || password.isEmpty())
                 {
-                    Toast.makeText(
-                            getContext(),
-                            "You have not entered your email or password."
-                            , Toast.LENGTH_LONG)
-                            .show();
+                    Snackbar.make(requireView(), "You have not entered your email or password.", Snackbar.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -109,7 +119,7 @@ public class LogFragment extends Fragment
                         {
                             if (state.equals("SUCCESS_LOGIN"))
                             {
-                                Navigation.findNavController(LogFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
+                                Navigation.findNavController(LoginFragment.this.requireView()).navigate(R.id.action_logFragment_to_home_fragment);
                             }
                             else if (state.equals("NO_EMAIL_VERIFIED"))
                             {
@@ -129,11 +139,11 @@ public class LogFragment extends Fragment
                                                 {
                                                     if (state.equals("EMAIL_SENT"))
                                                     {
-                                                        Toast.makeText(getContext(), "Verification E-mail has been sent again.", Toast.LENGTH_LONG).show();
+                                                        Snackbar.make(requireView(), "Verification E-mail has been sent again.", Snackbar.LENGTH_SHORT).show();
                                                     }
                                                     else
                                                     {
-                                                        Toast.makeText(getContext(), "Verification E-mail has been not sent. Try again.", Toast.LENGTH_LONG).show();
+                                                        Snackbar.make(requireView(), "Verification E-mail has been not sent. Try again.", Snackbar.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             });
@@ -172,34 +182,19 @@ public class LogFragment extends Fragment
             }
         });
 
-        mGoogleSignImageButton.setOnClickListener(new View.OnClickListener()
+        mGoogleSignInButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                //TODO log by Google
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 
-        mFacebookSignImageButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                //Todo log by Facebook
-            }
-        });
         AddClearButton(mEmailEditText);
         AddClearButton(mPasswordEditText);
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true)
-        {
-            @Override
-            public void handleOnBackPressed()
-            {
-                mAlerts.showExitFromApplicationAlert();
-            }
-        });
         return view;
     }
 
@@ -275,5 +270,43 @@ public class LogFragment extends Fragment
         mLoginProgressBar.setVisibility(View.INVISIBLE);
         mLogInButton.setVisibility(View.VISIBLE);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN)
+        {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try
+            {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
+
+                fireBaseAuthHandler.signWithGoogleAccount(account.getIdToken(), new FireBaseAuthState()
+                {
+                    @Override
+                    public void isOperationSuccessfully(String state)
+                    {
+                        if (state.equals("SUCCESS_LOGIN_WITH_GOOGLE"))
+                        {
+                            Snackbar.make(requireView(), account.getEmail() + ": successfully login with Google account", Snackbar.LENGTH_SHORT).show();
+                            Navigation.findNavController(requireView()).navigate(R.id.action_logFragment_to_home_fragment);
+                        }
+                        else if (state.equals("NO_SUCCESS_LOGIN_WITH_GOOGLE"))
+                        {
+                            mAlerts.showWrongUserDataAlert();
+                        }
+                    }
+                });
+            }
+            catch (ApiException e)
+            {
+                Log.w(TAG, "Google sign in failed", e);
+            }
+        }
     }
 }

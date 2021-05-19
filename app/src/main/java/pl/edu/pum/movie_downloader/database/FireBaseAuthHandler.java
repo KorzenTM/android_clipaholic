@@ -8,9 +8,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import pl.edu.pum.movie_downloader.models.User;
@@ -19,6 +21,7 @@ public final class FireBaseAuthHandler
 {
     private static FireBaseAuthHandler instance;
     private final FirebaseAuth mAuth;
+    private static final String TAG = "GoogleActivity";
 
     private FireBaseAuthHandler()
     {
@@ -181,6 +184,29 @@ public final class FireBaseAuthHandler
                 fireBaseAuthState.isOperationSuccessfully("RESET_EMAIL_NOT_SENT");
             }
         });
+    }
+
+    public void signWithGoogleAccount(String idToken, FireBaseAuthState fireBaseAuthState)
+    {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            fireBaseAuthState.isOperationSuccessfully("SUCCESS_LOGIN_WITH_GOOGLE");
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            fireBaseAuthState.isOperationSuccessfully("NO_SUCCESS_LOGIN_WITH_GOOGLE");
+                        }
+                    }
+                });
     }
 
     public void logOutUserAccount()

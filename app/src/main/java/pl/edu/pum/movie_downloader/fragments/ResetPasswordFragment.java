@@ -1,6 +1,7 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
@@ -38,7 +42,7 @@ public class ResetPasswordFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.reset_password_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_reset_password, container, false);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
         mEmailEditText= view.findViewById(R.id.reset_password_email_edit_text);
@@ -66,7 +70,7 @@ public class ResetPasswordFragment extends Fragment
                         {
                             if (state.equals("RESET_EMAIL_SENT"))
                             {
-                                Toast.makeText(getContext(), "Password reset E-mail has been sent.", Toast.LENGTH_LONG).show();
+                                Snackbar.make(requireView(), "Password reset E-mail has been sent.", Snackbar.LENGTH_SHORT).show();
                                 Navigation.findNavController(ResetPasswordFragment.this.requireView()).navigate(R.id.action_reset_fragment_to_logFragment);
                             }
                             else if (state.equals("RESET_EMAIL_NOT_SENT"))
@@ -78,7 +82,7 @@ public class ResetPasswordFragment extends Fragment
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "You have not entered email.", Toast.LENGTH_LONG).show();
+                    Snackbar.make(requireView(), "You have not entered email.", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });

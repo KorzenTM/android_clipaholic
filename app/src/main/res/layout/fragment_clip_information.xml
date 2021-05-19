@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="50dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/app_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20sp">
+
+        <RelativeLayout
+            android:id="@+id/get_link_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:background="@drawable/layout_rounded_background">
+
+            <TextView
+                android:id="@+id/placeholder_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="10sp"
+                android:text="Put the link here"
+                android:textStyle="bold"
+                android:layout_centerHorizontal="true"
+                android:textSize="30sp"
+                android:textColor="@color/text_color"/>
+
+            <EditText
+                android:id="@+id/link_edit_text"
+                android:layout_below="@id/placeholder_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10sp"
+                android:singleLine="true"
+                android:inputType="text"
+                android:hint="@string/link_example"
+                android:autofillHints="@string/fui_no_internet" />
+
+            <Button
+                android:layout_below="@id/link_edit_text"
+                android:id="@+id/check_link_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10sp"
+                android:backgroundTint="#2E8B57"
+                android:text="CHECK"
+                android:layout_centerHorizontal="true"
+                />
+
+            <ProgressBar
+                android:layout_below="@id/link_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/wait_for_info_progress_bar"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"
+                android:layout_margin="10sp"
+                />
+
+            <TextView
+                android:id="@+id/wait_text_view"
+                android:layout_below="@id/wait_for_info_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:text="Please wait..."
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/clip_information_relative_layout"
+            android:layout_below="@id/get_link_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"
+            android:layout_marginBottom="10sp"
+            android:background="@drawable/layout_rounded_background"
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/your_clip_header"
+                android:textAlignment="center"
+                android:layout_margin="5sp"
+                android:textSize="35sp"
+                android:text="Is that what you had in mind?"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
+
+
+            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                android:layout_below="@id/your_clip_header"
+                android:id="@+id/youtube_player_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10sp"
+                app:autoPlay="false"
+                app:showSeekBar="true"
+                app:showYouTubeButton="true" />
+
+            <TextView
+                android:layout_below="@id/youtube_player_view"
+                android:layout_margin="5sp"
+                android:id="@+id/title_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title"
+                android:textStyle="bold"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <View
+                android:layout_below="@id/title_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line1"
+                android:background="@color/black"/>
+
+            <TextView
+                android:layout_below="@id/line1"
+                android:layout_margin="5sp"
+                android:id="@+id/title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_below="@id/title_text_view"
+                android:layout_margin="5sp"
+                android:id="@+id/view_counter_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_of_views"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <View
+                android:layout_below="@id/view_counter_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line2"
+                android:background="@color/black"/>
+
+            <TextView
+                android:layout_below="@id/line2"
+                android:layout_margin="5sp"
+                android:id="@+id/view_counter_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_below="@id/view_counter_text_view"
+                android:layout_margin="5sp"
+                android:id="@+id/description_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textStyle="bold"
+                android:layout_centerHorizontal="true"
+                android:textSize="20sp"
+                android:textColor="@color/text_color"/>
+
+            <View
+                android:layout_below="@id/description_header"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line3"
+                android:background="@color/black"/>
+
+            <TextView
+                android:layout_below="@id/line3"
+                android:layout_margin="5sp"
+                android:id="@+id/description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_below="@id/description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line"
+                android:background="@color/black"/>
+
+            <TextView
+                android:id="@+id/format_choose_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/line"
+                android:layout_margin="5sp"
+                android:text="Choose quality"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
+
+            <RadioGroup
+                android:id="@+id/quality_radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/format_choose_placeholder"/>
+
+            <View
+                android:layout_below="@id/quality_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5sp"
+                android:id="@+id/line5"
+                android:background="@color/black"/>
+
+            <Button
+                android:id="@+id/download_button"
+                android:layout_below="@id/line5"
+                android:layout_toStartOf="@id/centerPoint"
+                android:backgroundTint="@color/button_background"
+                android:layout_width="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_height="wrap_content"
+                android:text="@string/downloadButton"/>
+
+            <TextView
+                android:id="@+id/centerPoint"
+                android:text=""
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" />
+
+            <Button
+                android:id="@+id/add_to_list_button"
+                android:layout_toEndOf="@id/download_button"
+                android:layout_below="@id/line5"
+                android:backgroundTint="@color/button_background"
+                android:layout_width="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_height="wrap_content"
+                android:text="@string/add_to_listButton"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

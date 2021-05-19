@@ -26,12 +26,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthState;
@@ -51,11 +54,6 @@ public class RegisterFragment extends Fragment
     private Alerts mAlerts;
 
     @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -65,7 +63,7 @@ public class RegisterFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.register_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(false);
 
         mNickEditView = view.findViewById(R.id.nick);
@@ -114,7 +112,7 @@ public class RegisterFragment extends Fragment
                             {
                                 if (state.equals("NEW_USER_CREATED"))
                                 {
-                                    Toast.makeText(getContext(), "Verification E-mail has been sent.", Toast.LENGTH_LONG).show();
+                                    Snackbar.make(requireView(), "Verification E-mail has been sent.", Snackbar.LENGTH_SHORT).show();
                                     Navigation.findNavController(RegisterFragment.this.requireView()).navigate(R.id.action_registerFragment_to_logFragment);
                                 }
                                 else if (state.equals("NEW_USER_NOT_CREATED"))

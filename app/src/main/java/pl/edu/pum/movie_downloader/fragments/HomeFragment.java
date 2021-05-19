@@ -1,115 +1,117 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.adapters.SourcesRecyclerViewAdapter;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
+import pl.edu.pum.movie_downloader.adapters.AvailableSourcesRecyclerViewAdapter;
+import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.local.DBHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class HomeFragment extends Fragment
 {
     private TextView mHelloUserTextView;
-    private RecyclerView mRecyclerView;
-    SourcesRecyclerViewAdapter mMyAdapter;
-    private List<Integer> mLogos = new ArrayList<Integer>()
+    AvailableSourcesRecyclerViewAdapter mMyAdapter;
+    private Alerts mAlerts;
+    private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>()
     {
         {
-            add(R.mipmap.youtube_icon);
-            add(R.mipmap.facebook_icon);
-            add(R.mipmap.vimeo_icon);
+            add(new Pair(R.mipmap.youtube_icon, "YouTube"));
+            add(new Pair(R.mipmap.facebook_icon, "Facebook"));
+            add(new Pair(R.mipmap.vimeo_icon, "Vimeo"));
         }
     };
-
     FirebaseUser mCurrentUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        mAlerts = new Alerts(getContext(), requireActivity());
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                mAlerts.showExitFromApplicationAlert();
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.home_fragment, container, false);
-        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
-
-        //Disabled unnecessary back button after login (avoid blank screen)
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true)
-        {
-            @Override
-            public void handleOnBackPressed()
-            {
-                showExitFromApplicationAlert();
-            }
-        });
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
 
         mHelloUserTextView = view.findViewById(R.id.hello_user_text_view);
-        mRecyclerView = view.findViewById(R.id.source_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        mMyAdapter = new SourcesRecyclerViewAdapter(getActivity(), mLogos);
-        mRecyclerView.setAdapter(mMyAdapter);
-
         FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
         mCurrentUser = fireBaseAuthHandler.getAuthorization().getCurrentUser();
 
+        Button nextSectionButton = view.findViewById(R.id.next_section_button);
+
+        nextSectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DownloadListFragment.dbHandler = new DBHandler(requireContext());
+                Handler handler = new Handler();
+                Runnable task = new Runnable() {
+                    @Override
+                    public void run() {
+                        DownloadListFragment.getDownloadList();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                                        setNumber(DownloadListFragment.mVideoInformationList.size());
+
+                            }
+                        });
+                    }
+                };
+                new Thread(task).start();
+                Navigation.findNavController(requireView()).navigate(R.id.action_home_fragment_to_clip_information_fragment);
+            }
+        });
         return view;
     }
 
-    private void showExitFromApplicationAlert()
-    {
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle("Exit application");
-        alertDialog.setMessage("Do you really want to leave the application?");
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        requireActivity().finish();
-                        System.exit(0);
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
-
-    @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        mHelloUserTextView.setText("Hello " + mCurrentUser.getDisplayName());
-
+        RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
+                requireActivity(),
+                mSources);
+        mRecyclerView.setAdapter(mMyAdapter);
+        setHelloMessageDependOfTime();
     }
 
     @Override
@@ -117,5 +119,29 @@ public class HomeFragment extends Fragment
     {
         super.onResume();
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void setHelloMessageDependOfTime()
+    {
+        Calendar calendar = Calendar.getInstance();
+        int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+
+        if(timeOfDay < 12)
+        {
+            mHelloUserTextView.setText("Good Morning " + mCurrentUser.getDisplayName());
+        }
+        else if(timeOfDay < 16)
+        {
+            mHelloUserTextView.setText("Good Afternoon " + mCurrentUser.getDisplayName());
+        }
+        else if(timeOfDay < 21)
+        {
+            mHelloUserTextView.setText("Good Evening " + mCurrentUser.getDisplayName());
+        }
+        else
+        {
+            mHelloUserTextView.setText("Good Night " + mCurrentUser.getDisplayName());
+        }
     }
 }

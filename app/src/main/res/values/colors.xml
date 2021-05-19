@@ -11,4 +11,6 @@
     <color name="toolbar_background">#1E90FF</color>
     <color name="nav_header_background">#2471A3</color>
     <color name="notification_bar_background">#2471A3</color>
+    <color name="button_background">#2E8B57</color>
+    <color name="text_color">#4169E1</color>
 </resources>
