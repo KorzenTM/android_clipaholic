@@ -99,10 +99,8 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
                 if (obj.getClass() == YouTubeDownloadListInformation.class) {
                     YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
                     if (isChecked){
-                        System.out.println("Zaznaczono");
                         onButtonClickListeners.onItemCheck(getAdapterPosition(), information);
                     }else {
-                        System.out.println("Odznaczono");
                         onButtonClickListeners.onItemUncheck(getAdapterPosition(), information);
                     }
                 }
