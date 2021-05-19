@@ -1,7 +1,6 @@
 package pl.edu.pum.movie_downloader.players.youtube;
 
 import android.util.Log;
-import android.view.View;
 
 import androidx.lifecycle.Lifecycle;
 

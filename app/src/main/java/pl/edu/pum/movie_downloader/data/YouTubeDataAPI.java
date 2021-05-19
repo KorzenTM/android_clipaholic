@@ -1,7 +1,5 @@
 package pl.edu.pum.movie_downloader.data;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -23,9 +21,7 @@ public class YouTubeDataAPI {
 
     private void setRequest() {
         YouTube youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
-                new HttpRequestInitializer() {
-                    public void initialize(HttpRequest request) throws IOException {
-                    }
+                request -> {
                 }).setApplicationName(APP_NAME).build();
 
         try {
@@ -42,8 +38,7 @@ public class YouTubeDataAPI {
         return videoRequest;
     }
 
-    public Video getData()
-    {
+    public Video getData() {
         setRequest();
         YouTube.Videos.List videoRequest = getRequest();
 

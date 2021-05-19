@@ -14,19 +14,21 @@
             android:id="@+id/hello_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15sp"
-            android:text="Get on\nBoard!\nRegister\nnow."
-            android:textSize="50sp"
+            android:layout_margin="10sp"
+            android:textAlignment="center"
+            android:lines="3"
+            android:text="@string/get_on_nboard_nregister_nnow"
+            android:textSize="30sp"
             android:textColor="@color/white"
             android:textStyle="bold"/>
 
         <ImageView
-            android:layout_toEndOf="@id/hello_text_view"
-            android:layout_marginTop="100sp"
-            android:layout_width="match_parent"
+            android:layout_margin="40sp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleX="3"
-            android:scaleY="3"
+            android:layout_alignParentEnd="true"
+            android:scaleX="2.3"
+            android:scaleY="2.3"
             app:srcCompat="@drawable/register_icon"/>
 
             <RelativeLayout
@@ -39,95 +41,110 @@
                 android:gravity="center"
                 android:layout_margin="10sp">
 
-            <TextView
-                android:id="@+id/hello"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:textColor="#4169E1"
-                android:layout_margin="8sp"
-                android:text="Please fill out the form"/>
+                <TextView
+                    android:id="@+id/hello"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#4169E1"
+                    android:layout_margin="5sp"
+                    android:text="@string/please_fill_out_the_form"/>
 
                 <EditText
                     android:id="@+id/nick"
                     android:layout_below="@id/hello"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5sp"
+                    android:textSize="16sp"
                     android:singleLine="true"
-                    android:hint="User name"/>
+                    android:hint="@string/user_name_tip"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/email"
                     android:layout_below="@id/nick"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="5sp"
+                    android:layout_margin="5sp"
+                    android:textSize="16sp"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:hint="Email"/>
+                    android:hint="@string/email_tip"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/password"
                     android:layout_below="@id/email"
-                    android:layout_marginTop="5sp"
+                    android:layout_margin="5sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="16sp"
                     android:inputType="textPassword"
                     android:singleLine="true"
-                    android:hint="Password" />
+                    android:hint="@string/password_tip"
+                    android:importantForAutofill="no" />
 
                 <TextView
-                    android:id="@+id/infor_about_password"
+                    android:id="@+id/information_about_password"
                     android:layout_below="@id/password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5sp"
                     android:layout_centerHorizontal="true"
                     android:textColor="#4169E1"
-                    android:text="Your password should meet the following requirements:\n- 8 characters minimum.\n- At least one uppercase and one lowercase letter.\n- At least one number and a special character."/>
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:text="@string/password_requirements"/>
 
                 <EditText
                     android:id="@+id/repeat_password"
-                    android:layout_below="@id/infor_about_password"
+                    android:layout_below="@id/information_about_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    android:textSize="16sp"
                     android:layout_marginTop="5sp"
                     android:inputType="textPassword"
-                    android:hint="Repeat password" />
+                    android:hint="@string/repeat_password_tip"
+                    android:importantForAutofill="no" />
 
                 <CheckBox
                     android:id="@+id/show_passwords_checkbox"
                     android:layout_below="@id/repeat_password"
-                    android:layout_marginTop="5sp"
-                    android:text="Show password"
-                    android:textColor="#4169E1"
+                    android:layout_margin="5sp"
+                    android:text="@string/show_password"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color"
+                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <Button
                     android:id="@+id/register_button"
                     android:width="250sp"
-                    android:layout_margin="10sp"
+                    android:layout_margin="5sp"
                     android:backgroundTint="#2E8B57"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/show_passwords_checkbox"
+                    android:textSize="14sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="REGISTER"/>
+                    android:text="@string/register"/>
 
                 <ProgressBar
                     android:id="@+id/wait_for_register_bar"
+                    android:layout_margin="5sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:layout_below="@id/repeat_password"
+                    android:layout_below="@id/show_passwords_checkbox"
                     android:indeterminate="true"
                     android:visibility="invisible"/>
-
             </RelativeLayout>
-
-
     </RelativeLayout>
 </ScrollView>

@@ -6,8 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SplashActivity extends AppCompatActivity
-{
+public class SplashActivity extends AppCompatActivity {
     private final Handler mHandler = new Handler();
 
     @Override
@@ -16,29 +15,21 @@ public class SplashActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
     }
 
-    private final Runnable runnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if(!isFinishing())
-            {
-                startActivity(new Intent(getApplicationContext(), NavHostActivity.class));
-                finish();
-            }
+    private final Runnable runnable = () -> {
+        if(!isFinishing()) {
+            startActivity(new Intent(getApplicationContext(), NavHostActivity.class));
+            finish();
         }
     };
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         mHandler.postDelayed(runnable, 200);
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
         mHandler.removeCallbacks(runnable);
     }

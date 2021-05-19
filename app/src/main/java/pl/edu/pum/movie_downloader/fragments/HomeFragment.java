@@ -32,28 +32,23 @@ import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.database.local.DBHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
-public class HomeFragment extends Fragment
-{
+public class HomeFragment extends Fragment {
     private TextView mHelloUserTextView;
     AvailableSourcesRecyclerViewAdapter mMyAdapter;
+    FirebaseUser mCurrentUser;
     private Alerts mAlerts;
-    private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>()
-    {
-        {
-            add(new Pair(R.mipmap.youtube_icon, "YouTube"));
-            add(new Pair(R.mipmap.facebook_icon, "Facebook"));
-            add(new Pair(R.mipmap.vimeo_icon, "Vimeo"));
+    private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>() {{
+            add(new Pair<>(R.mipmap.youtube_icon, "YouTube"));
+            add(new Pair<>(R.mipmap.facebook_icon, "Facebook"));
+            add(new Pair<>(R.mipmap.vimeo_icon, "Vimeo"));
         }
     };
-    FirebaseUser mCurrentUser;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAlerts = new Alerts(getContext(), requireActivity());
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true)
-        {
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed()
             {
@@ -63,9 +58,7 @@ public class HomeFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
 
@@ -75,72 +68,50 @@ public class HomeFragment extends Fragment
 
         Button nextSectionButton = view.findViewById(R.id.next_section_button);
 
-        nextSectionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DownloadListFragment.dbHandler = new DBHandler(requireContext());
-                Handler handler = new Handler();
-                Runnable task = new Runnable() {
-                    @Override
-                    public void run() {
-                        DownloadListFragment.getDownloadList();
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
-                                        setNumber(DownloadListFragment.mVideoInformationList.size());
-
-                            }
-                        });
-                    }
-                };
-                new Thread(task).start();
-                Navigation.findNavController(requireView()).navigate(R.id.action_home_fragment_to_clip_information_fragment);
-            }
+        nextSectionButton.setOnClickListener(v -> {
+            DownloadListFragment.dbHandler = new DBHandler(requireContext());
+            Handler handler = new Handler();
+            Runnable task = () -> {
+                DownloadListFragment.getDownloadList();
+                handler.post(() -> NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                        setNumber(DownloadListFragment.mVideoInformationList.size()));
+            };
+            new Thread(task).start();
+            Navigation.findNavController(requireView()).navigate(R.id.action_home_fragment_to_clip_information_fragment);
         });
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-    {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(HomeFragment.this.requireView(),
-                requireActivity(),
-                mSources);
+        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(requireActivity(), mSources);
         mRecyclerView.setAdapter(mMyAdapter);
         setHelloMessageDependOfTime();
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
     }
 
     @SuppressLint("SetTextI18n")
-    public void setHelloMessageDependOfTime()
-    {
+    public void setHelloMessageDependOfTime() {
         Calendar calendar = Calendar.getInstance();
         int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
 
-        if(timeOfDay < 12)
-        {
+        if(timeOfDay < 12) {
             mHelloUserTextView.setText("Good Morning " + mCurrentUser.getDisplayName());
         }
-        else if(timeOfDay < 16)
-        {
+        else if(timeOfDay < 16) {
             mHelloUserTextView.setText("Good Afternoon " + mCurrentUser.getDisplayName());
         }
-        else if(timeOfDay < 21)
-        {
+        else if(timeOfDay < 21) {
             mHelloUserTextView.setText("Good Evening " + mCurrentUser.getDisplayName());
-        }
-        else
-        {
+        } else {
             mHelloUserTextView.setText("Good Night " + mCurrentUser.getDisplayName());
         }
     }

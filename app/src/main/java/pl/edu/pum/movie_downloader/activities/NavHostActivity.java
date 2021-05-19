@@ -1,8 +1,11 @@
 package pl.edu.pum.movie_downloader.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -14,49 +17,40 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.alerts.Alerts;
 import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
-public class NavHostActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker
-{
+public class NavHostActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavController navController;
     private NavigationView navigationView;
-    private Alerts mAlerts;
     public static BottomNavigationView mBottomNavigationView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Window window = getWindow();
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.notification_bar_background));
-
-        mAlerts = new Alerts(this, NavHostActivity.this);
-
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -75,45 +69,40 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
         setBottomMenuItemActions();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        ActivityCompat.requestPermissions(NavHostActivity.this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                1);
     }
 
-    private void setBottomMenuVisibility()
-    {
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                if (destination.getId() == R.id.clip_information_fragment ||
-                    destination.getId() == R.id.download_history_fragment ||
-                    destination.getId() == R.id.download_list_fragment) {
-                    setNumberOfElementToDownload();
-                    mBottomNavigationView.setVisibility(View.VISIBLE);
-                } else {
-                    mBottomNavigationView.setVisibility(View.GONE);
-                }
+    private void setBottomMenuVisibility() {
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.clip_information_fragment ||
+                destination.getId() == R.id.download_history_fragment ||
+                destination.getId() == R.id.download_list_fragment) {
+                setNumberOfElementToDownload();
+                mBottomNavigationView.setVisibility(View.VISIBLE);
+            } else {
+                mBottomNavigationView.setVisibility(View.GONE);
             }
         });
     }
 
-    private void setBottomMenuItemActions()
-    {
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.clip_information_fragment:
-                        navController.navigate(R.id.clip_information_fragment);
-                        break;
-                    case R.id.download_list_fragment:
-                        navController.navigate(R.id.download_list_fragment);
-                        break;
-                    case R.id.download_history_fragment:
-                        navController.navigate(R.id.download_history_fragment);
-                        break;
-                }
-                return true;
+    @SuppressLint("NonConstantResourceId")
+    private void setBottomMenuItemActions() {
+        mBottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.clip_information_fragment:
+                    navController.navigate(R.id.clip_information_fragment);
+                    break;
+                case R.id.download_list_fragment:
+                    navController.navigate(R.id.download_list_fragment);
+                    break;
+                case R.id.download_history_fragment:
+                    navController.navigate(R.id.download_history_fragment);
+                    break;
             }
+            return true;
         });
     }
 
@@ -123,24 +112,20 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState)
-    {
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         actionBarDrawerToggle.syncState();
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig)
-    {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
-    {
-        if (actionBarDrawerToggle.onOptionsItemSelected(item))
-        {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -148,10 +133,8 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
 
     @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item)
-    {
-        switch (item.getItemId())
-        {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.profile_item:
                 Toast.makeText(this, "User profile", Toast.LENGTH_LONG).show();
                 break;
@@ -174,36 +157,42 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void onBackPressed()
-    {
-        boolean handled = false;
+    public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
         {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else
-        {
+        } else {
             super.onBackPressed();
         }
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void setDrawerEnabled(boolean enabled)
-    {
+    public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
         drawerLayout.setDrawerLockMode(lockMode);
         actionBarDrawerToggle.setDrawerIndicatorEnabled(enabled);
 
         FirebaseUser user = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
 
-        if (enabled && user != null)
-        {
+        if (enabled && user != null) {
             View headerView = navigationView.getHeaderView(0);
             TextView userNick = headerView.findViewById(R.id.nav_user_nickname_textView);
             TextView email = headerView.findViewById(R.id.nav_email_textView);
             userNick.setText(user.getDisplayName());
             email.setText(user.getEmail());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("PERMISSION_STATUS", "Permission granted");
+            } else {
+                Toast.makeText(NavHostActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

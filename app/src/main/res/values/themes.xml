@@ -31,9 +31,4 @@
 
     </style>
 
-    <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.Bridge">
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-    </style>
 </resources>

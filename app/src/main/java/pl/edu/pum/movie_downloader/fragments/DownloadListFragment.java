@@ -1,8 +1,14 @@
 package pl.edu.pum.movie_downloader.fragments;
 
-import android.content.ClipData;
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
@@ -10,25 +16,9 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.util.Pair;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
@@ -39,13 +29,12 @@ import pl.edu.pum.movie_downloader.models.YouTubeDownloadListInformation;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class DownloadListFragment extends Fragment {
-    public static List<Object> mVideoInformationList = new ArrayList<Object>();
+    public static final List<Object> mVideoInformationList = new ArrayList<>();
     public static DBHandler dbHandler;
-    private static Cursor mCursor;
     public DownloadListRecyclerViewAdapter downloadListRecyclerViewAdapter;
     private Button mDownloadAllButton;
-    private List<YouTubeDownloadListInformation> currentYTInformation = new ArrayList<>();
-    private TextView mEmptyListTextView;
+    private final List<YouTubeDownloadListInformation> currentYTInformation = new ArrayList<>();
+
     public DownloadListFragment() {
         // Required empty public constructor
     }
@@ -64,7 +53,7 @@ public class DownloadListFragment extends Fragment {
 
     public static void getDownloadList(){
         mVideoInformationList.clear();
-        mCursor = dbHandler.getDownloadList();
+        Cursor mCursor = dbHandler.getDownloadList();
 
         if (mCursor.getCount() == 0){
             Log.d("DATABASE_STATUS", "EMPTY DATABASE");
@@ -89,7 +78,7 @@ public class DownloadListFragment extends Fragment {
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
         View view =  inflater.inflate(R.layout.fragment_download_list, container, false);
         mDownloadAllButton = view.findViewById(R.id.download_all_selected_button);
-        mEmptyListTextView = view.findViewById(R.id.empty_list_text_view);
+        TextView mEmptyListTextView = view.findViewById(R.id.empty_list_text_view);
 
         if (!mVideoInformationList.isEmpty()){
             mEmptyListTextView.setVisibility(View.GONE);
@@ -99,8 +88,9 @@ public class DownloadListFragment extends Fragment {
             recyclerView.setAdapter(downloadListRecyclerViewAdapter);
 
             downloadListRecyclerViewAdapter.setOnButtonClickListeners(new DownloadListRecyclerViewAdapter.OnButtonClickListener() {
+                @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemCheck(int position, YouTubeDownloadListInformation youTubeDownloadListInformation) {
+                public void onItemCheck(YouTubeDownloadListInformation youTubeDownloadListInformation) {
                     currentYTInformation.add(youTubeDownloadListInformation);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (mDownloadAllButton.getVisibility() == View.GONE && !currentYTInformation.isEmpty()){
@@ -108,13 +98,13 @@ public class DownloadListFragment extends Fragment {
                     }
                 }
 
+                @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemUncheck(int position, YouTubeDownloadListInformation youTubeDownloadListInformation) {
+                public void onItemUncheck(YouTubeDownloadListInformation youTubeDownloadListInformation) {
                     currentYTInformation.remove(youTubeDownloadListInformation);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (currentYTInformation.isEmpty() && mDownloadAllButton.getVisibility() == View.VISIBLE){
                         mDownloadAllButton.setVisibility(View.GONE);
-                        return;
                     }
                 }
             });
@@ -122,20 +112,17 @@ public class DownloadListFragment extends Fragment {
             mEmptyListTextView.setVisibility(View.VISIBLE);
         }
 
-        mDownloadAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!currentYTInformation.isEmpty()){
-                    for (YouTubeDownloadListInformation information : currentYTInformation){
-                        new YouTubeDownloadURL(requireContext(), information.getLink()).downloadVideoFromURL(
-                                information.getDownloadURL(),
-                                information.getTitle(),
-                                information.getExtension()
-                        );
-                    }
-                } else{
-                    Snackbar.make(requireView(), "No file has been selected.", Snackbar.LENGTH_SHORT).show();
+        mDownloadAllButton.setOnClickListener(v -> {
+            if (!currentYTInformation.isEmpty()){
+                for (YouTubeDownloadListInformation information : currentYTInformation){
+                    new YouTubeDownloadURL(requireContext(), information.getLink()).downloadVideoFromURL(
+                            information.getDownloadURL(),
+                            information.getTitle(),
+                            information.getExtension()
+                    );
                 }
+            } else{
+                Snackbar.make(requireView(), "No file has been selected.", Snackbar.LENGTH_SHORT).show();
             }
         });
         return view;

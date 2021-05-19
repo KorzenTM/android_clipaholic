@@ -2,40 +2,40 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:title="Account">
+        android:title="@string/account">
         <menu>
             <group>
                 <item
                     android:id="@+id/profile_item"
                     android:icon="@drawable/ic_baseline_account_circle_24"
-                    android:title="Your profile" />
+                    android:title="@string/your_profile" />
                 <item
                     android:id="@+id/log_out_item"
                     android:icon="@drawable/ic_baseline_exit_to_app_24"
-                    android:title="Log out" />
+                    android:title="@string/log_out" />
             </group>
         </menu>
     </item>
 
     <item
-        android:title="Application">
+        android:title="@string/application">
         <menu>
             <group>
                 <item
                     android:id="@+id/settings"
                     android:icon="@drawable/ic_baseline_settings_24"
-                    android:title="Settings" />
+                    android:title="@string/settings" />
             </group>
         </menu>
     </item>
 
     <item
-        android:title="Communicate">
+        android:title="@string/communicate">
         <menu>
             <item
                 android:id="@+id/help_and_support_item"
                 android:icon="@drawable/ic_baseline_help_24"
-                android:title="Help and Support" />
+                android:title="@string/help_and_support" />
         </menu>
     </item>
 </menu>

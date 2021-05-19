@@ -6,11 +6,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import pl.edu.pum.movie_downloader.R;
 
 public class Downloader {
     private final Context mContext;

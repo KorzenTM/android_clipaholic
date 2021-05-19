@@ -1,10 +1,7 @@
 package pl.edu.pum.movie_downloader.viemodel;
 
 import android.util.Pair;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -13,18 +10,17 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 import java.util.List;
 
-import pl.edu.pum.movie_downloader.data.YouTubeDataAPI;
 import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
 
 public class PageViewModel extends ViewModel {
-    private MutableLiveData<List<Pair<Integer, String>>> mFormatData = new MutableLiveData<>();
-    private MutableLiveData<Integer> mClipLayoutVisibility = new MutableLiveData<>();
-    private MutableLiveData<Integer> mPlayerVisibility = new MutableLiveData<>();
-    private MutableLiveData<YouTubeDownloadURL> mYouTubeDownloadURLMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<Video> mVideoMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<YouTubePlayer> mYouTubePlayerMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<YouTubePlayerView> mYouTubePlayerViewMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Pair<Integer, String>>> mFormatData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mClipLayoutVisibility = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mPlayerVisibility = new MutableLiveData<>();
+    private final MutableLiveData<YouTubeDownloadURL> mYouTubeDownloadURLMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Video> mVideoMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<YouTubePlayer> mYouTubePlayerMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<YouTubePlayerView> mYouTubePlayerViewMutableLiveData = new MutableLiveData<>();
 
     public MutableLiveData<YouTubePlayerView> getYouTubePlayerViewMutableLiveData() {
         return mYouTubePlayerViewMutableLiveData;
