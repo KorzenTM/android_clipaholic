@@ -25,7 +25,7 @@ public class YouTubeDataAPI {
                 }).setApplicationName(APP_NAME).build();
 
         try {
-            videoRequest = youtube.videos().list("snippet,statistics,contentDetails");
+            videoRequest = youtube.videos().list("snippet,statistics");
         } catch (IOException e) {
             e.printStackTrace();
         }

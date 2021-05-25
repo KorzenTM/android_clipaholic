@@ -25,15 +25,15 @@ import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.adapters.DownloadListRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.database.local.DBHandler;
 import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
-import pl.edu.pum.movie_downloader.models.YouTubeDownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformation;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class DownloadListFragment extends Fragment {
-    public static final List<Object> mVideoInformationList = new ArrayList<>();
+    public static final List<DownloadListInformation> mVideoInformationList = new ArrayList<>();
     public static DBHandler dbHandler;
     public DownloadListRecyclerViewAdapter downloadListRecyclerViewAdapter;
     private Button mDownloadAllButton;
-    private final List<YouTubeDownloadListInformation> currentYTInformation = new ArrayList<>();
+    private final List<DownloadListInformation> currentYTInformation = new ArrayList<>();
 
     public DownloadListFragment() {
         // Required empty public constructor
@@ -67,7 +67,7 @@ public class DownloadListFragment extends Fragment {
                 String url = mCursor.getString(5);
                 String ext = mCursor.getString(6);
                 String link = mCursor.getString(7);
-                mVideoInformationList.add(new YouTubeDownloadListInformation(title,
+                mVideoInformationList.add(new DownloadListInformation(title,
                         format, clipID, itag, url, ext, link));
             }
         }
@@ -90,8 +90,8 @@ public class DownloadListFragment extends Fragment {
             downloadListRecyclerViewAdapter.setOnButtonClickListeners(new DownloadListRecyclerViewAdapter.OnButtonClickListener() {
                 @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemCheck(YouTubeDownloadListInformation youTubeDownloadListInformation) {
-                    currentYTInformation.add(youTubeDownloadListInformation);
+                public void onItemCheck(DownloadListInformation downloadListInformation) {
+                    currentYTInformation.add(downloadListInformation);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (mDownloadAllButton.getVisibility() == View.GONE && !currentYTInformation.isEmpty()){
                         mDownloadAllButton.setVisibility(View.VISIBLE);
@@ -100,8 +100,8 @@ public class DownloadListFragment extends Fragment {
 
                 @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemUncheck(YouTubeDownloadListInformation youTubeDownloadListInformation) {
-                    currentYTInformation.remove(youTubeDownloadListInformation);
+                public void onItemUncheck(DownloadListInformation downloadListInformation) {
+                    currentYTInformation.remove(downloadListInformation);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (currentYTInformation.isEmpty() && mDownloadAllButton.getVisibility() == View.VISIBLE){
                         mDownloadAllButton.setVisibility(View.GONE);
@@ -114,7 +114,7 @@ public class DownloadListFragment extends Fragment {
 
         mDownloadAllButton.setOnClickListener(v -> {
             if (!currentYTInformation.isEmpty()){
-                for (YouTubeDownloadListInformation information : currentYTInformation){
+                for (DownloadListInformation information : currentYTInformation){
                     new YouTubeDownloadURL(requireContext(), information.getLink()).downloadVideoFromURL(
                             information.getDownloadURL(),
                             information.getTitle(),

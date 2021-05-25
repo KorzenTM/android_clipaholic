@@ -16,10 +16,20 @@ public class Downloader {
         this.mContext = context;
     }
 
-    public void downloadFromUrl(String youtubeDlUrl, String downloadTitle, String fileName) {
+    public String createFilename(String title, String extension){
+        String filename;
+        if (title.length() > 55) {
+            filename = title.substring(0, 55) + "." + extension;
+        } else {
+            filename = title + "." + extension;
+        }
+        return filename;
+    }
+
+    public void downloadFromUrl(String Url, String downloadTitle, String fileName) {
         View rootView = ((Activity)mContext).getWindow().getDecorView().findViewById(android.R.id.content);
         Snackbar.make(rootView, "Download has been started.", Snackbar.LENGTH_SHORT).show();
-        Uri uri = Uri.parse(youtubeDlUrl);
+        Uri uri = Uri.parse(Url);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(downloadTitle);
 

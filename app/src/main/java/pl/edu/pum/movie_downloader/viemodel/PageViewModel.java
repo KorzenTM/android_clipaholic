@@ -10,17 +10,38 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 import java.util.List;
 
+import pl.edu.pum.movie_downloader.data.vimeo.VimeoDataAPI;
 import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
 
 public class PageViewModel extends ViewModel {
+    private final MutableLiveData<String> mLinkMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Pair<Integer, String>>> mFormatData = new MutableLiveData<>();
     private final MutableLiveData<Integer> mClipLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mPlayerVisibility = new MutableLiveData<>();
+    //YouTube state
     private final MutableLiveData<YouTubeDownloadURL> mYouTubeDownloadURLMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Video> mVideoMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<YouTubePlayer> mYouTubePlayerMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<YouTubePlayerView> mYouTubePlayerViewMutableLiveData = new MutableLiveData<>();
+    //VimeoState
+    private final MutableLiveData<VimeoDataAPI> mVimeoDataAPIMutableLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<String>  getLinkMutableLiveData() {
+        return this.mLinkMutableLiveData;
+    }
+
+    public void setLinkMutableLiveData(String link){
+        this.mLinkMutableLiveData.setValue(link);
+    }
+
+    public MutableLiveData<VimeoDataAPI> getVimeoDataAPIMutableLiveData(){
+        return mVimeoDataAPIMutableLiveData;
+    }
+
+    public void setVimeoDataAPIMutableLiveData(VimeoDataAPI vimeoDataAPI){
+        this.mVimeoDataAPIMutableLiveData.setValue(vimeoDataAPI);
+    }
 
     public MutableLiveData<YouTubePlayerView> getYouTubePlayerViewMutableLiveData() {
         return mYouTubePlayerViewMutableLiveData;

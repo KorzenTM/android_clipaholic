@@ -1,6 +1,6 @@
 package pl.edu.pum.movie_downloader.models;
 
-public class YouTubeDownloadListInformation {
+public class DownloadListInformation {
     private final String mLink;
     private final String mTitle;
     private final String mFormat;
@@ -9,12 +9,13 @@ public class YouTubeDownloadListInformation {
     private final String mExtension;
     private final int mITag;
 
-    public YouTubeDownloadListInformation(String Title, String Format, String ID, int ITAG, String URL, String ext, String link ) {
+    public DownloadListInformation(String Title, String Format, String ID, int ITAG,
+                                   String downloadURL, String ext, String link ) {
         this.mTitle = Title;
         this.mFormat = Format;
         this.mID = ID;
         this.mITag = ITAG;
-        this.mDownloadURL = URL;
+        this.mDownloadURL = downloadURL;
         this.mExtension = ext;
         this.mLink = link;
     }
