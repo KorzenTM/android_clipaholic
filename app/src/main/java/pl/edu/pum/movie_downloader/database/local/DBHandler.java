@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import pl.edu.pum.movie_downloader.models.YouTubeDownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformation;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -66,7 +66,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
-    public void addYouTubeClip(YouTubeDownloadListInformation information){
+    public void addYouTubeClip(DownloadListInformation information){
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, information.getTitle());
         values.put(COLUMN_CLIP_ID, information.getID());

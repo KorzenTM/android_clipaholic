@@ -2,6 +2,7 @@ package pl.edu.pum.movie_downloader.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     private NavController navController;
     private NavigationView navigationView;
     public static BottomNavigationView mBottomNavigationView;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,12 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
         ActivityCompat.requestPermissions(NavHostActivity.this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
+
+        NavHostActivity.context = getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return NavHostActivity.context;
     }
 
     private void setBottomMenuVisibility() {

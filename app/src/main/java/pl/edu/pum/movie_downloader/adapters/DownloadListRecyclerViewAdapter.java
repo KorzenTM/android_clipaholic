@@ -2,6 +2,7 @@ package pl.edu.pum.movie_downloader.adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,21 +22,22 @@ import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
+import pl.edu.pum.movie_downloader.downloader.Downloader;
 import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
 import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
-import pl.edu.pum.movie_downloader.models.YouTubeDownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformation;
 
 public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<DownloadListRecyclerViewAdapter.ViewHolder> {
     public interface OnButtonClickListener{
-        void onItemCheck(YouTubeDownloadListInformation youTubeDownloadListInformation);
-        void onItemUncheck(YouTubeDownloadListInformation youTubeDownloadListInformation);
+        void onItemCheck(DownloadListInformation downloadListInformation);
+        void onItemUncheck(DownloadListInformation downloadListInformation);
     }
 
     private final FragmentActivity mContext;
-    public final List<Object> mClipInformationList;
+    public final List<DownloadListInformation> mClipInformationList;
     OnButtonClickListener onButtonClickListeners;
 
-    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<Object> clipInformationList) {
+    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<DownloadListInformation> clipInformationList) {
         this.mContext = context;
         this.mClipInformationList = clipInformationList;
     }
@@ -53,15 +55,11 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Object obj = mClipInformationList.get(position);
-        if (obj.getClass() == YouTubeDownloadListInformation.class){
-            YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
-            final String format = information.getFormat();
-            final String title = information.getTitle();
-            final String id = information.getID();
-            holder.bind(format, title, id);
-        }
-
+        DownloadListInformation information = mClipInformationList.get(position);
+        final String format = information.getFormat();
+        final String title = information.getTitle();
+        final String id = information.getID();
+        holder.bind(format, title, id);
     }
 
     @Override
@@ -85,63 +83,66 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
             Button mDeleteButton = itemView.findViewById(R.id.delete_from_list_button);
             mDownloadCheckbox = itemView.findViewById(R.id.download_checkbox);
             mDownloadCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                Object obj = mClipInformationList.get(getAdapterPosition());
-                if (obj.getClass() == YouTubeDownloadListInformation.class) {
-                    YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
-                    if (isChecked){
-                        onButtonClickListeners.onItemCheck(information);
-                    }else {
-                        onButtonClickListeners.onItemUncheck(information);
-                    }
+                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                if (isChecked){
+                    itemView.setBackgroundColor(Color.LTGRAY);
+                    onButtonClickListeners.onItemCheck(information);
+                }else {
+                    itemView.setBackgroundColor(Color.WHITE);
+                    onButtonClickListeners.onItemUncheck(information);
                 }
             });
 
             mDeleteButton.setOnClickListener(v -> {
-                Object obj = mClipInformationList.get(getAdapterPosition());
-                if (obj.getClass() == YouTubeDownloadListInformation.class){
-                    YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
-                    int iTag = information.getITag();
-                    DownloadListFragment.dbHandler.deleteYouTubeClip(mTitleTextView.getText().toString(),
-                            iTag);
-                    DownloadListFragment.getDownloadList();
-                    notifyDataSetChanged();
-                    NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
-                            setNumber(mClipInformationList.size());
+                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                if (mDownloadCheckbox.isChecked()){
+                    onButtonClickListeners.onItemUncheck(information);
                 }
+                int iTag = information.getITag();
+                DownloadListFragment.dbHandler.deleteYouTubeClip(mTitleTextView.getText().toString(),
+                        iTag);
+                DownloadListFragment.getDownloadList();
+                notifyDataSetChanged();
+                NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                        setNumber(mClipInformationList.size());
             });
 
             mDownloadButton.setOnClickListener(v -> {
-                Object obj = mClipInformationList.get(getAdapterPosition());
-                if (obj.getClass() == YouTubeDownloadListInformation.class){
-                    YouTubeDownloadListInformation information = (YouTubeDownloadListInformation) obj;
-                    String link = information.getDownloadURL();
-                    String title = information.getTitle();
-                    String ext = information.getExtension();
-
-                    YouTubeDownloadURL youTubeDownloadURL = new YouTubeDownloadURL(mContext, link);
-                    youTubeDownloadURL.downloadVideoFromURL(link, title, ext);
-                }
+                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                Downloader downloader = new Downloader(mContext);
+                String link = information.getDownloadURL();
+                String title = information.getTitle();
+                String ext = information.getExtension();
+                String filename = downloader.createFilename(title, ext);
+                downloader.downloadFromUrl(link, title, filename);
             });
         }
 
         public void bind(String format, String title, String id) {
-            android.os.Handler handler = new Handler();
-            Runnable task = () -> {
-                try
-                {
-                    String url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
-                    handler.post(() -> {
-                        mThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 64, false));
-                        mFormatTextView.setText(format);
-                        mTitleTextView.setText(title);
-                    });
+            if (!id.isEmpty()){
+                android.os.Handler handler = new Handler();
+                Runnable task = () -> {
+                    try
+                    {
+                        String url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
+                        Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+                        handler.post(() -> {
+                            mThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 64, false));
+                            mFormatTextView.setText(format);
+                            mTitleTextView.setText(title);
+                        });
 
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            };
-            new Thread(task).start();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                };
+                new Thread(task).start();
+            }
+            else{
+                mThumbnail.setImageResource(R.mipmap.vimeo_icon);
+                mFormatTextView.setText(format);
+                mTitleTextView.setText(title);
+            }
         }
 
         @Override

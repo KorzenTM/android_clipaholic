@@ -70,16 +70,16 @@
                 android:layout_height="1dp"
                 android:background="@color/black"/>
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/next_section_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/line2"
                 android:layout_margin="5sp"
-                android:textSize="14sp"
+                android:src="@drawable/ic_baseline_arrow_forward_24"
                 android:backgroundTint="@color/button_background"
                 android:layout_centerHorizontal="true"
-                android:text="Go to next section"/>
+                android:contentDescription="@string/go_to_the_next_section" />
 
         </RelativeLayout>
     </RelativeLayout>

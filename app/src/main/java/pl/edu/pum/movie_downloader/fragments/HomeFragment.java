@@ -7,7 +7,6 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -18,6 +17,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
         FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
         mCurrentUser = fireBaseAuthHandler.getAuthorization().getCurrentUser();
 
-        Button nextSectionButton = view.findViewById(R.id.next_section_button);
+        FloatingActionButton nextSectionButton = view.findViewById(R.id.next_section_button);
 
         nextSectionButton.setOnClickListener(v -> {
             DownloadListFragment.dbHandler = new DBHandler(requireContext());
