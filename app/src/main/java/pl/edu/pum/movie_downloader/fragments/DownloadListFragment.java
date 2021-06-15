@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,22 +20,33 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.R;
+import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.adapters.DownloadListRecyclerViewAdapter;
-import pl.edu.pum.movie_downloader.database.local.DBHandler;
-import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.database.local.firestore.FirestoreDBHandler;
+import pl.edu.pum.movie_downloader.database.local.sqlite.DBHandler;
+import pl.edu.pum.movie_downloader.downloader.Downloader;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class DownloadListFragment extends Fragment {
-    public static final List<DownloadListInformation> mVideoInformationList = new ArrayList<>();
+    public static final List<DownloadListInformationDTO> mVideoInformationList = new ArrayList<>();
     public static DBHandler dbHandler;
     public DownloadListRecyclerViewAdapter downloadListRecyclerViewAdapter;
     private Button mDownloadAllButton;
-    private final List<DownloadListInformation> currentYTInformation = new ArrayList<>();
+    private final List<DownloadListInformationDTO> currentYTInformation = new ArrayList<>();
 
     public DownloadListFragment() {
         // Required empty public constructor
@@ -45,7 +58,7 @@ public class DownloadListFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Navigation.findNavController(requireView()).navigate(R.id.home_fragment);
+                Navigation.findNavController(requireView()).navigate(R.id.action_download_list_fragment_to_home_fragment);
             }
         });
 
@@ -67,8 +80,9 @@ public class DownloadListFragment extends Fragment {
                 String url = mCursor.getString(5);
                 String ext = mCursor.getString(6);
                 String link = mCursor.getString(7);
-                mVideoInformationList.add(new DownloadListInformation(title,
-                        format, clipID, itag, url, ext, link));
+                String source = mCursor.getString(8);
+                mVideoInformationList.add(new DownloadListInformationDTO(title,
+                        format, clipID, itag, url, ext, link, source));
             }
         }
     }
@@ -76,22 +90,29 @@ public class DownloadListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((DrawerLocker) requireActivity()).setDrawerEnabled(true);
-        View view =  inflater.inflate(R.layout.fragment_download_list, container, false);
+        return inflater.inflate(R.layout.fragment_download_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         mDownloadAllButton = view.findViewById(R.id.download_all_selected_button);
         TextView mEmptyListTextView = view.findViewById(R.id.empty_list_text_view);
 
         if (!mVideoInformationList.isEmpty()){
             mEmptyListTextView.setVisibility(View.GONE);
             RecyclerView recyclerView = view.findViewById(R.id.download_list_recycler_view);
+            recyclerView.setItemAnimator(new SlideInRightAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
             downloadListRecyclerViewAdapter = new DownloadListRecyclerViewAdapter(requireActivity(), mVideoInformationList);
-            recyclerView.setAdapter(downloadListRecyclerViewAdapter);
+            recyclerView.setAdapter(new ScaleInAnimationAdapter(downloadListRecyclerViewAdapter));
 
             downloadListRecyclerViewAdapter.setOnButtonClickListeners(new DownloadListRecyclerViewAdapter.OnButtonClickListener() {
                 @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemCheck(DownloadListInformation downloadListInformation) {
-                    currentYTInformation.add(downloadListInformation);
+                public void onItemCheck(DownloadListInformationDTO downloadListInformationDTO) {
+                    currentYTInformation.add(downloadListInformationDTO);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (mDownloadAllButton.getVisibility() == View.GONE && !currentYTInformation.isEmpty()){
                         mDownloadAllButton.setVisibility(View.VISIBLE);
@@ -100,11 +121,12 @@ public class DownloadListFragment extends Fragment {
 
                 @SuppressLint("SetTextI18n")
                 @Override
-                public void onItemUncheck(DownloadListInformation downloadListInformation) {
-                    currentYTInformation.remove(downloadListInformation);
+                public void onItemUncheck(DownloadListInformationDTO downloadListInformationDTO) {
+                    currentYTInformation.remove(downloadListInformationDTO);
                     mDownloadAllButton.setText("Download all selected(" + currentYTInformation.size() + ")");
                     if (currentYTInformation.isEmpty() && mDownloadAllButton.getVisibility() == View.VISIBLE){
                         mDownloadAllButton.setVisibility(View.GONE);
+                        DownloadListRecyclerViewAdapter.isSelectable = false;
                     }
                 }
             });
@@ -114,17 +136,31 @@ public class DownloadListFragment extends Fragment {
 
         mDownloadAllButton.setOnClickListener(v -> {
             if (!currentYTInformation.isEmpty()){
-                for (DownloadListInformation information : currentYTInformation){
-                    new YouTubeDownloadURL(requireContext(), information.getLink()).downloadVideoFromURL(
-                            information.getDownloadURL(),
+                mDownloadAllButton.setVisibility(View.GONE);
+                Downloader downloader = new Downloader(requireContext());
+                String userName = Objects.requireNonNull(FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser()).getDisplayName();
+                FirestoreDBHandler firestoreDBHandler = new FirestoreDBHandler();
+                for (DownloadListInformationDTO information : currentYTInformation){
+                    String currentDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now());
+                    firestoreDBHandler.add(userName,
+                            UUID.randomUUID().toString(),
                             information.getTitle(),
-                            information.getExtension()
-                    );
+                            information.getFormat(),
+                            currentDate,
+                            information.getSource());
+                    downloader.downloadFromUrl(information.getDownloadURL(), information.getTitle());
+                    int iTag = information.getITag();
+                    DownloadListRecyclerViewAdapter.mClipInformationList.remove(information);
+                    downloadListRecyclerViewAdapter.notifyDataSetChanged();
+                    DownloadListFragment.dbHandler.deleteClipFromList(information.getTitle(),
+                            iTag);
                 }
+                currentYTInformation.clear();
+                NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
+                        setNumber(mVideoInformationList.size());
             } else{
                 Snackbar.make(requireView(), "No file has been selected.", Snackbar.LENGTH_SHORT).show();
             }
         });
-        return view;
     }
 }

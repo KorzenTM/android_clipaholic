@@ -1,4 +1,4 @@
-package pl.edu.pum.movie_downloader.data;
+package pl.edu.pum.movie_downloader.data.youtube;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;

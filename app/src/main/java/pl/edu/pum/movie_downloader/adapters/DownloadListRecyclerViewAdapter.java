@@ -1,14 +1,11 @@
 package pl.edu.pum.movie_downloader.adapters;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,30 +13,28 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.downloader.Downloader;
-import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
 import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 
 public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<DownloadListRecyclerViewAdapter.ViewHolder> {
     public interface OnButtonClickListener{
-        void onItemCheck(DownloadListInformation downloadListInformation);
-        void onItemUncheck(DownloadListInformation downloadListInformation);
+        void onItemCheck(DownloadListInformationDTO downloadListInformationDTO);
+        void onItemUncheck(DownloadListInformationDTO downloadListInformationDTO);
     }
 
     private final FragmentActivity mContext;
-    public final List<DownloadListInformation> mClipInformationList;
+    public static List<DownloadListInformationDTO> mClipInformationList;
+    public static boolean isSelectable = false;
     OnButtonClickListener onButtonClickListeners;
 
-    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<DownloadListInformation> clipInformationList) {
+    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<DownloadListInformationDTO> clipInformationList) {
         this.mContext = context;
-        this.mClipInformationList = clipInformationList;
+        mClipInformationList = clipInformationList;
     }
 
     public void setOnButtonClickListeners(OnButtonClickListener listener){
@@ -55,9 +50,12 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DownloadListInformation information = mClipInformationList.get(position);
+        DownloadListInformationDTO information = mClipInformationList.get(position);
         final String format = information.getFormat();
-        final String title = information.getTitle();
+        String title = information.getTitle();
+        if (title.length() > 10){
+            title = title.substring(0, 10) + "...";
+        }
         final String id = information.getID();
         holder.bind(format, title, id);
     }
@@ -67,11 +65,13 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
         return mClipInformationList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
         private final ImageView mThumbnail;
         private final TextView mTitleTextView;
         private final TextView mFormatTextView;
         public final CheckBox mDownloadCheckbox;
+        public final ImageButton mDeleteButton;
+        public final ImageButton mDownloadButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,74 +79,90 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
             mThumbnail = itemView.findViewById(R.id.thumbnail_image_view);
             mTitleTextView = itemView.findViewById(R.id.title_text_view_recycle);
             mFormatTextView = itemView.findViewById(R.id.format_text_view_recycle);
-            Button mDownloadButton = itemView.findViewById(R.id.download_button);
-            Button mDeleteButton = itemView.findViewById(R.id.delete_from_list_button);
+            mDeleteButton = itemView.findViewById(R.id.delete_from_list_button);
+            mDownloadButton = itemView.findViewById(R.id.download_button);
+            itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
+
             mDownloadCheckbox = itemView.findViewById(R.id.download_checkbox);
             mDownloadCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
                 if (isChecked){
                     itemView.setBackgroundColor(Color.LTGRAY);
+                    itemView.setBackgroundResource(R.drawable.selected_recycler_view_background);
+                    mDeleteButton.setBackgroundColor(Color.rgb(211, 211, 211));
+                    mDownloadButton.setBackgroundColor(Color.rgb(211, 211, 211));
                     onButtonClickListeners.onItemCheck(information);
                 }else {
                     itemView.setBackgroundColor(Color.WHITE);
+                    itemView.setBackgroundResource(R.drawable.recycler_view_background);
+                    mDeleteButton.setBackgroundColor(Color.WHITE);
+                    mDownloadButton.setBackgroundColor(Color.WHITE);
                     onButtonClickListeners.onItemUncheck(information);
+                    mDownloadCheckbox.setVisibility(View.GONE);
+                    setAccessibilityOfButtons(true);
                 }
             });
 
             mDeleteButton.setOnClickListener(v -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
+                mClipInformationList.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+                notifyItemRangeChanged(getAdapterPosition(), mClipInformationList.size() - 1);
                 if (mDownloadCheckbox.isChecked()){
                     onButtonClickListeners.onItemUncheck(information);
                 }
                 int iTag = information.getITag();
-                DownloadListFragment.dbHandler.deleteYouTubeClip(mTitleTextView.getText().toString(),
+                DownloadListFragment.dbHandler.deleteClipFromList(information.getTitle(),
                         iTag);
-                DownloadListFragment.getDownloadList();
-                notifyDataSetChanged();
                 NavHostActivity.mBottomNavigationView.getOrCreateBadge(R.id.download_list_fragment).
                         setNumber(mClipInformationList.size());
             });
 
             mDownloadButton.setOnClickListener(v -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
                 Downloader downloader = new Downloader(mContext);
-                String link = information.getDownloadURL();
+                String downloadURL = information.getDownloadURL();
+                System.out.println(downloadURL);
                 String title = information.getTitle();
-                String ext = information.getExtension();
-                String filename = downloader.createFilename(title, ext);
-                downloader.downloadFromUrl(link, title, filename);
+                downloader.downloadFromUrl(downloadURL, title);
             });
         }
 
         public void bind(String format, String title, String id) {
-            if (!id.isEmpty()){
-                android.os.Handler handler = new Handler();
-                Runnable task = () -> {
-                    try
-                    {
-                        String url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
-                        Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
-                        handler.post(() -> {
-                            mThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 64, false));
-                            mFormatTextView.setText(format);
-                            mTitleTextView.setText(title);
-                        });
+            if (id.equals("yt")){
+                mThumbnail.setImageResource(R.mipmap.youtube_icon);
 
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                };
-                new Thread(task).start();
             }
-            else{
+            else if (id.equals("vimeo")){
                 mThumbnail.setImageResource(R.mipmap.vimeo_icon);
-                mFormatTextView.setText(format);
-                mTitleTextView.setText(title);
             }
+
+            mFormatTextView.setText(format);
+            mTitleTextView.setText(title);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mDownloadCheckbox.setVisibility(View.VISIBLE);
+            setAccessibilityOfButtons(false);
+            mDownloadCheckbox.setChecked(true);
+            isSelectable = true;
+            return true;
         }
 
         @Override
         public void onClick(View v) {
+            if (isSelectable){
+                mDownloadCheckbox.setVisibility(View.VISIBLE);
+                setAccessibilityOfButtons(false);
+                mDownloadCheckbox.setChecked(!mDownloadCheckbox.isChecked());
+            }
+        }
+
+        private void setAccessibilityOfButtons(boolean isEnable){
+            mDownloadButton.setEnabled(isEnable);
+            mDeleteButton.setEnabled(isEnable);
         }
     }
 }

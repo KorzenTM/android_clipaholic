@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,7 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class ResetPasswordFragment extends Fragment {
@@ -30,6 +31,12 @@ public class ResetPasswordFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Navigation.findNavController(requireView()).navigate(R.id.action_reset_fragment_to_logFragment);
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")

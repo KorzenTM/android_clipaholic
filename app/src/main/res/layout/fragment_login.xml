@@ -81,7 +81,7 @@
                 android:layout_below="@id/password_field"
                 android:layout_margin="5sp"
                 android:textSize="15sp"
-                android:text="Forgot your password?"
+                android:text="@string/forgot_your_password"
                 android:textStyle="bold"
                 android:textColor="#4169E1"/>
 

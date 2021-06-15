@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "667066757603",
+    "firebase_url": "https://clipaholic-77208-default-rtdb.firebaseio.com",
     "project_id": "clipaholic-77208",
     "storage_bucket": "clipaholic-77208.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "667066757603-6230gv862kr5kt8vtnq5j3jte1736846.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.edu.pum.movie_downloader",
+            "certificate_hash": "ebd984f27bf181dcedb2d32079b3c21291fe7a9a"
+          }
+        },
         {
           "client_id": "667066757603-92m9uvl5psrlekmqbam85heoer59c9kj.apps.googleusercontent.com",
           "client_type": 3
@@ -27,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "667066757603-92m9uvl5psrlekmqbam85heoer59c9kj.apps.googleusercontent.com",
+              "client_id": "667066757603-1u3j3al9j4nalsc77tt43u50mcb5c2jp.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

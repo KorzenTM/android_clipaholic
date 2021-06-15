@@ -11,7 +11,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import java.util.List;
 
 import pl.edu.pum.movie_downloader.data.vimeo.VimeoDataAPI;
-import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
+import pl.edu.pum.movie_downloader.data.youtube.YouTubeFormatAPI;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
 
 public class PageViewModel extends ViewModel {
@@ -20,7 +20,7 @@ public class PageViewModel extends ViewModel {
     private final MutableLiveData<Integer> mClipLayoutVisibility = new MutableLiveData<>();
     private final MutableLiveData<Integer> mPlayerVisibility = new MutableLiveData<>();
     //YouTube state
-    private final MutableLiveData<YouTubeDownloadURL> mYouTubeDownloadURLMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<YouTubeFormatAPI> mYouTubeDownloadURLMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Video> mVideoMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<YouTubePlayer> mYouTubePlayerMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<YouTubePlayerView> mYouTubePlayerViewMutableLiveData = new MutableLiveData<>();
@@ -74,11 +74,11 @@ public class PageViewModel extends ViewModel {
         return mVideoMutableLiveData;
     }
 
-    public void setYouTubeDownloadURLMutableLiveData(YouTubeDownloadURL youTubeDownloadURL){
-        this.mYouTubeDownloadURLMutableLiveData.setValue(youTubeDownloadURL);
+    public void setYouTubeDownloadURLMutableLiveData(YouTubeFormatAPI youTubeFormatAPI){
+        this.mYouTubeDownloadURLMutableLiveData.setValue(youTubeFormatAPI);
     }
 
-    public MutableLiveData<YouTubeDownloadURL> getYouTubeDownloadURLMutableLiveData(){
+    public MutableLiveData<YouTubeFormatAPI> getYouTubeDownloadURLMutableLiveData(){
         return mYouTubeDownloadURLMutableLiveData;
     }
 

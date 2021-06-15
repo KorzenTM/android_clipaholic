@@ -28,8 +28,8 @@ import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.adapters.AvailableSourcesRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
-import pl.edu.pum.movie_downloader.database.local.DBHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.local.sqlite.DBHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class HomeFragment extends Fragment {
@@ -37,9 +37,8 @@ public class HomeFragment extends Fragment {
     AvailableSourcesRecyclerViewAdapter mMyAdapter;
     FirebaseUser mCurrentUser;
     private Alerts mAlerts;
-    private final List<Pair<Integer, String>> mSources = new ArrayList<Pair<Integer, String>>() {{
+    private final List<Pair<Integer, String>> mSupportedSources = new ArrayList<Pair<Integer, String>>() {{
             add(new Pair<>(R.mipmap.youtube_icon, "YouTube"));
-            add(new Pair<>(R.mipmap.facebook_icon, "Facebook"));
             add(new Pair<>(R.mipmap.vimeo_icon, "Vimeo"));
         }
     };
@@ -68,6 +67,7 @@ public class HomeFragment extends Fragment {
 
         FloatingActionButton nextSectionButton = view.findViewById(R.id.next_section_button);
 
+
         nextSectionButton.setOnClickListener(v -> {
             DownloadListFragment.dbHandler = new DBHandler(requireContext());
             Handler handler = new Handler();
@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView mRecyclerView = view.findViewById(R.id.source_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(requireActivity(), mSources);
+        mMyAdapter = new AvailableSourcesRecyclerViewAdapter(requireActivity(), mSupportedSources);
         mRecyclerView.setAdapter(mMyAdapter);
         setHelloMessageDependOfTime();
     }
@@ -102,17 +102,18 @@ public class HomeFragment extends Fragment {
     public void setHelloMessageDependOfTime() {
         Calendar calendar = Calendar.getInstance();
         int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        String userName = mCurrentUser.getDisplayName();
 
         if(timeOfDay < 12) {
-            mHelloUserTextView.setText("Good Morning " + mCurrentUser.getDisplayName());
+            mHelloUserTextView.setText("Good Morning " + userName);
         }
         else if(timeOfDay < 16) {
-            mHelloUserTextView.setText("Good Afternoon " + mCurrentUser.getDisplayName());
+            mHelloUserTextView.setText("Good Afternoon " + userName);
         }
         else if(timeOfDay < 21) {
-            mHelloUserTextView.setText("Good Evening " + mCurrentUser.getDisplayName());
+            mHelloUserTextView.setText("Good Evening " + userName);
         } else {
-            mHelloUserTextView.setText("Good Night " + mCurrentUser.getDisplayName());
+            mHelloUserTextView.setText("Good Night " + userName);
         }
     }
 }

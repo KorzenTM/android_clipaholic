@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -30,7 +31,7 @@ import java.util.List;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class RegisterFragment extends Fragment {
@@ -46,6 +47,12 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Navigation.findNavController(requireView()).navigate(R.id.action_registerFragment_to_logFragment);
+            }
+        });
     }
 
     @Nullable

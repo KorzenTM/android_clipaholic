@@ -1,6 +1,7 @@
 package pl.edu.pum.movie_downloader.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -9,17 +10,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -29,25 +30,36 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
-import com.ashudevs.facebookurlextractor.FacebookExtractor;
-import com.ashudevs.facebookurlextractor.FacebookFile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.services.youtube.model.Video;
 
+
+import org.jetbrains.annotations.NotNull;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.data.vimeo.VimeoDataAPI;
-import pl.edu.pum.movie_downloader.data.YouTubeDataAPI;
-import pl.edu.pum.movie_downloader.downloader.YouTubeURL.YouTubeDownloadURL;
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.data.youtube.YouTubeDataAPI;
+import pl.edu.pum.movie_downloader.data.youtube.YouTubeFormatAPI;
+import pl.edu.pum.movie_downloader.database.local.firestore.FirestoreDBHandler;
+import pl.edu.pum.movie_downloader.database.local.sqlite.DBHandler;
+import pl.edu.pum.movie_downloader.downloader.Downloader;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
 import pl.edu.pum.movie_downloader.viemodel.PageViewModel;
@@ -67,11 +79,10 @@ public class ClipInformationFragment extends Fragment {
     private FloatingActionButton mAddToListButton;
     private RadioGroup mQualityRadioGroup;
     private RelativeLayout mClipLayout;
-    public  YouTubeDownloadURL mYouTubeDownloadURL;
+    private YouTubeFormatAPI mYouTubeFormatAPI;
     private YouTubeDataAPI mYouTubeDataAPI;
     private VimeoDataAPI mVimeoDataAPI;
     private Video mTargetVideo = null;
-    private int RequestForDataCounter = 0;
     private String mLink;
 
     public ClipInformationFragment() {
@@ -85,7 +96,7 @@ public class ClipInformationFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Navigation.findNavController(requireView()).navigate(R.id.home_fragment);
+                Navigation.findNavController(requireView()).navigate(R.id.action_clip_information_fragment_to_home_fragment);
             }
         });
     }
@@ -104,32 +115,74 @@ public class ClipInformationFragment extends Fragment {
         mDescriptionTextView = view.findViewById(R.id.description_text_view);
         mWaitTextView = view.findViewById(R.id.wait_text_view);
         mWaitProgressBar = view.findViewById(R.id.wait_for_info_progress_bar);
-        mOtherVideoPlayer = view.findViewById(R.id.other_player_view);
-        YouTubePlayer.youTubePlayerView = view.findViewById(R.id.youtube_player_view);
+        //YouTubePlayer.youTubePlayerView = view.findViewById(R.id.youtube_player_view);
         mLinkEditText = view.findViewById(R.id.link_edit_text);
         mAddToListButton = view.findViewById(R.id.add_to_list_button);
         mCheckLinkButton = view.findViewById(R.id.check_link_button);
         Button mDownloadButton = view.findViewById(R.id.download_button);
         mAddToListButton.setClickable(false);
         mAddToListButton.setVisibility(View.GONE);
+
         restoreState(view);
         addClearButton(mLinkEditText);
 
-        if (mLinkEditText.requestFocus()){
-            requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
+        ImageButton showTitleButton = view.findViewById(R.id.show_title_Button);
+        showTitleButton.setOnClickListener(v -> {
+            if (mTitleTextView.getVisibility() == View.GONE){
+                mTitleTextView.setVisibility(View.VISIBLE);
+                showTitleButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            }else {
+                mTitleTextView.setVisibility(View.GONE);
+                showTitleButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+            }
+        });
+
+        ImageButton showViewCounterButton = view.findViewById(R.id.show_views_Button);
+        showViewCounterButton.setOnClickListener(v -> {
+            if (mCounterViewTextView.getVisibility() == View.GONE){
+                mCounterViewTextView.setVisibility(View.VISIBLE);
+                showViewCounterButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            }else {
+                mCounterViewTextView.setVisibility(View.GONE);
+                showViewCounterButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+            }
+        });
+
+        ImageButton showDescriptionButton = view.findViewById(R.id.show_description_Button);
+        showDescriptionButton.setOnClickListener(v -> {
+            if (mDescriptionTextView.getVisibility() == View.GONE){
+                mDescriptionTextView.setVisibility(View.VISIBLE);
+                showDescriptionButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            }else {
+                mDescriptionTextView.setVisibility(View.GONE);
+                showDescriptionButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+            }
+        });
+
+        ImageButton showFormatsButton = view.findViewById(R.id.show_formats_Button);
+        showFormatsButton.setOnClickListener(v -> {
+            if (mQualityRadioGroup.getVisibility() == View.GONE){
+                mQualityRadioGroup.setVisibility(View.VISIBLE);
+                showFormatsButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            }else {
+                mQualityRadioGroup.setVisibility(View.GONE);
+                showFormatsButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+            }
+        });
 
         mCheckLinkButton.setOnClickListener(v -> {
+            resetData();
             mLink = mLinkEditText.getText().toString();
+            mClipLayout.setVisibility(View.GONE);
             if (!mLink.isEmpty()) {
                 setWaitProgressVisibility(View.VISIBLE);
+                hideKeyboard(view);
                 if (isYouTubeUrl(mLink)) {
                     initYouTube();
                 }
                 else if (isVimeoURL(mLink)) {
                     initVimeo();
-                }
-                else {
+                } else {
                     setWaitProgressVisibility(View.GONE);
                     mLinkEditText.setError("Wrong link or we do not support this source");
                 }
@@ -145,27 +198,25 @@ public class ClipInformationFragment extends Fragment {
                 String title, format, id, url, ext;
                 int itag;
                 if (isYouTubeUrl(mLink)){
-                    if (mYouTubeDownloadURL != null && mTargetVideo != null){
-                        title = mTargetVideo.getSnippet().getTitle().replace("\"", "");
+                    if (mYouTubeFormatAPI != null && mTargetVideo != null){
+                        title = mTargetVideo.getSnippet().getTitle().replaceAll("[^a-zA-Z0-9]", " ");
                         format = radioButton.getText().toString();
-                        id = mYouTubePlayer.getClipID();
+                        id = "yt";
                         itag = mQualityRadioGroup.getCheckedRadioButtonId();
-                        url = mYouTubeDownloadURL.getDownloadURL(itag);
-                        ext = mYouTubeDownloadURL.getExtension(itag);
-                        addToList(title, format, id, itag, url, ext, mLink);
-                    }else{
-                        Snackbar.make(requireView(), "Failed to get the correct data. Please try again.", Snackbar.LENGTH_SHORT).show();
+                        url = mYouTubeFormatAPI.getDownloadURL(itag);
+                        ext = mYouTubeFormatAPI.getExtension(itag);
+                        addToList(title, format, id, itag, url, ext, mLink, "youtube");
                     }
                 }
                 else if(isVimeoURL(mLink)){
                     if (mVimeoDataAPI != null){
                         title = mVimeoDataAPI.getTitle();
                         format = radioButton.getText().toString();
-                        id = "";
-                        itag = -1;
+                        id = "vimeo";
+                        itag = mQualityRadioGroup.getCheckedRadioButtonId();
                         url = mVimeoDataAPI.getStreamsMap().get(mQualityRadioGroup.getCheckedRadioButtonId() + "p");
                         ext = "mp4";
-                        addToList(title, format, id, itag, url, ext, mLink);
+                        addToList(title, format, id, itag, url, ext, mLink, "vimeo");
                     }else {
                         Snackbar.make(requireView(), "Failed to get the correct data. Please try again.", Snackbar.LENGTH_SHORT).show();
                     }
@@ -175,31 +226,40 @@ public class ClipInformationFragment extends Fragment {
                 }
             } else{
                 Snackbar.make(requireView(), "You have to choose download format.", Snackbar.LENGTH_SHORT).show();
+                if (mQualityRadioGroup.getVisibility() == View.GONE) showFormatsButton.performClick();
             }
         });
 
         mDownloadButton.setOnClickListener(v -> {
             if (mQualityRadioGroup.getCheckedRadioButtonId() == -1){
+                if (mQualityRadioGroup.getVisibility() == View.GONE) showFormatsButton.performClick();
+                mQualityRadioGroup.requestFocus();
                 Snackbar.make(requireView(), "You have to choose download format.", Snackbar.LENGTH_SHORT).show();
             }else{
                 if (!mLink.isEmpty()) {
+                    Downloader downloader = new Downloader(requireContext());
+                    FirestoreDBHandler firestoreDBHandler = new FirestoreDBHandler();
                     int key = mQualityRadioGroup.getCheckedRadioButtonId();
-                    setWaitProgressVisibility(View.VISIBLE);
-                    if (mLink.contains("facebook") || mLink.contains("fb")) {
-                        initFacebook(mLink);
+                    int selectedFormat = mQualityRadioGroup.getCheckedRadioButtonId();
+                    RadioButton radioButton = view.findViewById(selectedFormat);
+                    String userName = Objects.requireNonNull(FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser()).getDisplayName();
+                    String currentDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now());
+                    if (isYouTubeUrl(mLink) && mYouTubeFormatAPI != null) {
+                        String title = mTargetVideo.getSnippet().getTitle().replaceAll("[^a-zA-Z0-9]", " ");
+                        String url = mYouTubeFormatAPI.getDownloadURL(key);
+                        String format = radioButton.getText().toString();
+                        firestoreDBHandler.add(userName, UUID.randomUUID().toString(), title, format, currentDate, "youtube");
+                        downloader.downloadFromUrl(url, title);
                     }
-                    if (isYouTubeUrl(mLink) && mYouTubeDownloadURL != null) {
-                        mYouTubeDownloadURL.downloadVideoFromITag(key);
-                        setWaitProgressVisibility(View.GONE);
-                    }
-                    if (isVimeoURL(mLink) && mVimeoDataAPI != null) {
+                    else if (isVimeoURL(mLink) && mVimeoDataAPI != null) {
                         String vimeoKey = key + "p";
+                        String title = mVimeoDataAPI.getTitle();
+                        String format = radioButton.getText().toString();
                         String url = mVimeoDataAPI.getStreamsMap().get(vimeoKey);
-                        mVimeoDataAPI.download(url);
-                        setWaitProgressVisibility(View.GONE);
+                        firestoreDBHandler.add(userName, UUID.randomUUID().toString(), title, format, currentDate, "vimeo");
+                        downloader.downloadFromUrl(url, title);
                     }
                     else {
-                        setWaitProgressVisibility(View.GONE);
                         mLinkEditText.setError("Wrong link or we do not support this source.");
                     }
                 } else {
@@ -207,17 +267,54 @@ public class ClipInformationFragment extends Fragment {
                 }
             }
         });
+
         return view;
     }
 
+    private void resetData() {
+        mYouTubeFormatAPI = null;
+        mVimeoDataAPI = null;
+
+        if (YouTubePlayer.youTubePlayerView != null){
+            YouTubePlayer.youTubePlayerView.setVisibility(View.GONE);
+            YouTubePlayer.youTubePlayerView = null;
+        }
+        else if (mOtherVideoPlayer != null){
+            mOtherVideoPlayer.setVisibility(View.GONE);
+            mOtherVideoPlayer.setOnCompletionListener(MediaPlayer::release);
+            mOtherVideoPlayer = null;
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Bundle bundle = this.getArguments();
+        if (bundle != null){
+            String link = bundle.getString("link", null);
+            if (!link.isEmpty()){
+                mLinkEditText.setText(link);
+                mCheckLinkButton.callOnClick();
+            }
+        }
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     private void addToList(String title, String format, String ID, int ITag,
-                      String downloadURL, String ext, String link){
-        DownloadListInformation downloadListInformation =
-                new DownloadListInformation(title, format, ID,
-                        ITag, downloadURL, ext, link);
+                           String downloadURL, String ext, String link, String source){
+        DownloadListInformationDTO downloadListInformationDTO =
+                new DownloadListInformationDTO(title, format, ID,
+                        ITag, downloadURL, ext, link, source);
         Handler handler = new Handler();
         Runnable task = () -> {
-            DownloadListFragment.dbHandler.addYouTubeClip(downloadListInformation);
+            if (DownloadListFragment.dbHandler == null){
+                DownloadListFragment.dbHandler = new DBHandler(requireContext());
+            }
+            DownloadListFragment.dbHandler.addNewClipToList(downloadListInformationDTO);
             DownloadListFragment.getDownloadList();
             handler.post(() -> {
                 View download_list_view = NavHostActivity.mBottomNavigationView.findViewById(R.id.download_list_fragment);
@@ -240,7 +337,7 @@ public class ClipInformationFragment extends Fragment {
         if (mLink != null){
             mLinkEditText.setText(mLink);
             if (!mLink.isEmpty() && mLink.contains("vimeo")){
-                restoreVimeoState();
+                restoreVimeoState(view);
             }
             else if (!mLink.isEmpty() && isYouTubeUrl(mLink)){
                 restoreYouTubeState(view);
@@ -249,12 +346,11 @@ public class ClipInformationFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void restoreVimeoState(){
+    private void restoreVimeoState(View view){
         pageViewModel.getVimeoDataAPIMutableLiveData().observe(requireActivity(), vimeoDataAPI -> {
             if (vimeoDataAPI != null){
                 mVimeoDataAPI = vimeoDataAPI;
-                mOtherVideoPlayer.setVisibility(View.VISIBLE);
-                setUpOtherSourcesPlayer(vimeoDataAPI.getURLToPlay());
+                setUpOtherSourcesPlayer(vimeoDataAPI.getURLToPlay(), view);
                 String title = vimeoDataAPI.getTitle();
                 String author = vimeoDataAPI.getAuthorName();
                 mTitleTextView.setText(title);
@@ -299,14 +395,13 @@ public class ClipInformationFragment extends Fragment {
         });
 
         pageViewModel.getYouTubeDownloadURLMutableLiveData().observe(requireActivity(),
-                youTubeDownloadURL -> mYouTubeDownloadURL = youTubeDownloadURL);
+                youTubeFormatAPI -> mYouTubeFormatAPI = youTubeFormatAPI);
 
         pageViewModel.getYouTubePlayerMutableLiveData().observe(requireActivity(), youTubePlayer -> {
             mYouTubePlayer = youTubePlayer;
             YouTubePlayer.youTubePlayerView = view.findViewById(R.id.youtube_player_view);
             YouTubePlayer.youTubePlayerView.setVisibility(View.VISIBLE);
-            Runnable task = () -> mYouTubePlayer.init();
-            new Thread(task).start();
+            mYouTubePlayer.init();
         });
     }
 
@@ -318,7 +413,11 @@ public class ClipInformationFragment extends Fragment {
         edt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                if (s.length() > 0) {
+                    edt.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0, R.drawable.ic_baseline_clear_24,0);
+                } else {
+                    edt.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0, 0,0);
+                }
             }
 
             @Override
@@ -349,23 +448,6 @@ public class ClipInformationFragment extends Fragment {
 
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void initFacebook(String link) {
-        new FacebookExtractor(requireContext(), "https://fb.watch/5BSrFxIW3b", false) {
-            @Override
-            protected void onExtractionComplete(FacebookFile facebookFile) {
-                System.out.println(facebookFile.getAuthor());
-                System.out.println(facebookFile.getFilename());
-                System.out.println(facebookFile.getSdUrl());
-            }
-            @Override
-            protected void onExtractionFail(Exception Error) {
-                Log.e("Error", "Error :: " + Error.getMessage());
-                Error.printStackTrace();
-            }
-        };
-    }
-
     private boolean isYouTubeUrl(String link){
         String pattern = "^(http(s)?:\\/\\/)?((w){3}.)?youtu(be|.be)?(\\.com)?\\/.+";
         return link.matches(pattern);
@@ -377,23 +459,18 @@ public class ClipInformationFragment extends Fragment {
     }
 
     private void initYouTube() {
-        mYouTubeDownloadURL = null;
-        mYouTubeDownloadURL = new YouTubeDownloadURL(requireContext(), mLink);
-        RequestForDataCounter = 0;
+        getFormatsFromYouTubeUrl();
         setUpYouTubePlayer();
         getInformationAboutYouTubeClipFromURL();
-        getFormatsFromYouTubeUrl();
     }
 
     private void setUpYouTubePlayer(){
-        if (mOtherVideoPlayer.getVisibility() == View.VISIBLE){
-            mOtherVideoPlayer.setVisibility(View.GONE);
-        }
+        YouTubePlayer.youTubePlayerView = requireView().findViewById(R.id.youtube_player_view);
         YouTubePlayer.youTubePlayerView.setVisibility(View.VISIBLE);
         if (mYouTubePlayer == null){
             mYouTubePlayer = new YouTubePlayer(mLink, getLifecycle());
-            Runnable task1 = () -> mYouTubePlayer.init();
-            new Thread(task1).start();
+            mYouTubePlayer.setClipID(mLink);
+            mYouTubePlayer.init();
         }else {
             mYouTubePlayer.setClipID(mLink);
             Runnable task2 = () -> mYouTubePlayer.setNextVideo();
@@ -419,56 +496,51 @@ public class ClipInformationFragment extends Fragment {
     }
 
     private void getFormatsFromYouTubeUrl(){
-        YouTubeDownloadURL.extract(state -> {
+        mYouTubeFormatAPI = new YouTubeFormatAPI(requireContext(), mLink);
+        mYouTubeFormatAPI.extract(state -> {
             if (state.equals("SUCCESS")) {
-                RequestForDataCounter = 0;
                 mQualityRadioGroup.removeAllViews();
-                List<RadioButton> radioButtonList = mYouTubeDownloadURL.getRadioButtonsList();
+                List<RadioButton> radioButtonList = mYouTubeFormatAPI.getRadioButtonsList();
                 for (RadioButton button: radioButtonList) {
-                    System.out.println(button.getText().toString());
                     mQualityRadioGroup.addView(button);
                 }
                 setWaitProgressVisibility(View.GONE);
                 updateUI();
             }
             if (state.equals("NO_SUCCESS")){
-                if (RequestForDataCounter > 3){
-                    RequestForDataCounter = 0;
-                    mQualityRadioGroup.removeAllViews();
-                    Snackbar snackbar = Snackbar
-                            .make(requireView(), "Failed to download the data.", Snackbar.LENGTH_LONG)
-                            .setAction("RETRY", view -> initYouTube());
-                    snackbar.setActionTextColor(Color.RED);
-                    snackbar.show();
-                    setWaitProgressVisibility(View.GONE);
-                }else{
-                    RequestForDataCounter++;
-                    System.out.println(RequestForDataCounter);
-                    setWaitProgressVisibility(View.VISIBLE);
-                    getFormatsFromYouTubeUrl();
-                }
+                mQualityRadioGroup.removeAllViews();
+                Snackbar snackbar = Snackbar
+                        .make(requireView(), "Failed to download the data.", Snackbar.LENGTH_LONG)
+                        .setAction("RETRY", view -> initYouTube());
+                snackbar.setActionTextColor(Color.RED);
+                snackbar.show();
+                setWaitProgressVisibility(View.GONE);
             }
         });
     }
 
-    @SuppressLint("SetTextI18n")
     private void initVimeo(){
+        getDataFromVimeoURL();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void getDataFromVimeoURL(){
         mVimeoDataAPI = new VimeoDataAPI(requireContext(), mLink);
         Handler handler = new Handler();
         mVimeoDataAPI.extract(state -> {
             if (state.equals("SUCCESS")){
                 handler.post(() -> {
-                    setUpOtherSourcesPlayer(mVimeoDataAPI.getURLToPlay());
                     mTitleTextView.setText(mVimeoDataAPI.getTitle());
                     mCounterViewTextView.setText("Not available");
                     mDescriptionTextView.setText("This video is from Vimeo and is owned by "
                             + mVimeoDataAPI.getAuthorName());
-                    setWaitProgressVisibility(View.GONE);
                     mQualityRadioGroup.removeAllViews();
                     List<RadioButton> radioButtonList = mVimeoDataAPI.getRadioButtonsList();
                     for (RadioButton button: radioButtonList) {
                         mQualityRadioGroup.addView(button);
                     }
+                    setWaitProgressVisibility(View.GONE);
+                    setUpOtherSourcesPlayer(mVimeoDataAPI.getURLToPlay(), requireView());
                     updateUI();
                 });
             }
@@ -482,12 +554,11 @@ public class ClipInformationFragment extends Fragment {
                 setWaitProgressVisibility(View.GONE);
             }
         });
+
     }
 
-    public void setUpOtherSourcesPlayer(String link){
-        if (YouTubePlayer.youTubePlayerView.getVisibility() == View.VISIBLE){
-            YouTubePlayer.youTubePlayerView.setVisibility(View.GONE);
-        }
+    public void setUpOtherSourcesPlayer(String link, View view){
+        mOtherVideoPlayer = view.findViewById(R.id.other_player_view);
         mOtherVideoPlayer.setVisibility(View.VISIBLE);
         final MediaController mediaController = new MediaController(requireContext());
         mediaController.setAnchorView(mOtherVideoPlayer);
@@ -506,7 +577,7 @@ public class ClipInformationFragment extends Fragment {
     private void updateUI() {
         mAddToListButton.setVisibility(View.VISIBLE);
         mAddToListButton.setClickable(true);
-        Animation emerge = AnimationUtils.loadAnimation(requireContext(), R.anim.emerge);
+        Animation emerge = AnimationUtils.loadAnimation(requireContext(), R.anim.down_to_up);
         mClipLayout.setVisibility(View.VISIBLE);
         mClipLayout.startAnimation(emerge);
     }
@@ -522,7 +593,9 @@ public class ClipInformationFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         setViewModel();
-        mOtherVideoPlayer.setOnCompletionListener(MediaPlayer::release);
+        if (mOtherVideoPlayer != null) {
+            mOtherVideoPlayer.setOnCompletionListener(MediaPlayer::release);
+        }
     }
 
     public void setViewModel(){
@@ -532,15 +605,15 @@ public class ClipInformationFragment extends Fragment {
 
         pageViewModel.setClipLayoutVisibility(mClipLayout.getVisibility());
 
-        if (mYouTubeDownloadURL != null && !mYouTubeDownloadURL.getRadioButtonsList().isEmpty()){
+        if (mYouTubeFormatAPI != null && !mYouTubeFormatAPI.getRadioButtonsList().isEmpty()){
             List<Pair<Integer, String>> formatData = new ArrayList<>();
-            List<RadioButton> radioButtonList = mYouTubeDownloadURL.getRadioButtonsList();
+            List<RadioButton> radioButtonList = mYouTubeFormatAPI.getRadioButtonsList();
             for (RadioButton button:radioButtonList){
                 formatData.add(new Pair<>(button.getId(), button.getText().toString()));
             }
             pageViewModel.setFormatDataList(formatData);
-            pageViewModel.setYouTubeDownloadURLMutableLiveData(mYouTubeDownloadURL);
-            mYouTubeDownloadURL = null;
+            pageViewModel.setYouTubeDownloadURLMutableLiveData(mYouTubeFormatAPI);
+            mYouTubeFormatAPI = null;
         }
 
         if (mTargetVideo != null){

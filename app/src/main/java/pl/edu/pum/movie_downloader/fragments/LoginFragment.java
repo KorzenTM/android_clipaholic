@@ -29,13 +29,12 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class LoginFragment extends Fragment {
@@ -142,13 +141,6 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
-        FirebaseUser firebaseUser = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
-
-        if (firebaseUser != null && firebaseUser.isEmailVerified())
-        {
-            Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -205,7 +197,7 @@ public class LoginFragment extends Fragment {
                 Log.d(TAG, "firebaseAuthWithGoogle:" + Objects.requireNonNull(account).getId());
                 FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
 
-                fireBaseAuthHandler.signWithGoogleAccount(account.getIdToken(), state -> {
+                fireBaseAuthHandler.signWithGoogleAccount(account.getIdToken(), account.getDisplayName(), state -> {
                     if (state.equals("SUCCESS_LOGIN_WITH_GOOGLE")) {
                         Snackbar.make(requireView(), account.getEmail() + ": successfully login with Google account", Snackbar.LENGTH_SHORT).show();
                         Navigation.findNavController(requireView()).navigate(R.id.action_logFragment_to_home_fragment);
