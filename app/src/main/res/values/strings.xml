@@ -45,4 +45,7 @@
     <string name="check_link">Check link</string>
     <string name="thumbnail">Thumbnail</string>
     <string name="forgot_your_password"><u>Forgot your password?</u></string>
+    <string name="youtube">YouTube</string>
+    <string name="delete_all_history">DELETE ALL HISTORY</string>
+    <string name="vimeo">Vimeo</string>
 </resources>

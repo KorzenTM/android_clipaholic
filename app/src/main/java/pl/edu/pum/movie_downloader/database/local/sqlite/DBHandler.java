@@ -1,4 +1,4 @@
-package pl.edu.pum.movie_downloader.database.local;
+package pl.edu.pum.movie_downloader.database.local.sqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -21,8 +21,9 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_FORMAT = "format";
     public static final String COLUMN_YT_ITAG = "yt_iTag"; //for youtube clips
     public static final String COLUMN_DOWNLOAD_LINK = "download_url";
-    public static final String COLUMN_CLIP_EXTENSION = "yt_clip_extension";
-    public static final String COLUMN_LINK = "yt_link";
+    public static final String COLUMN_CLIP_EXTENSION = "clip_extension";
+    public static final String COLUMN_LINK = "link";
+    public static final String COLUMN_SOURCE = "source";
 
 
     public DBHandler(@Nullable Context context) {
@@ -49,6 +50,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 COLUMN_CLIP_EXTENSION +
                 " TEXT," +
                 COLUMN_LINK +
+                " TEXT," +
+                COLUMN_SOURCE +
                 " TEXT" +
                 ")";
         db.execSQL(CREATE_DOWNLOAD_LIST_TABLE);
@@ -66,7 +69,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
-    public void addNewClipToList(DownloadListInformation information){
+    public void addNewClipToList(DownloadListInformationDTO information){
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, information.getTitle());
         values.put(COLUMN_CLIP_ID, information.getID());
@@ -75,6 +78,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_DOWNLOAD_LINK, information.getDownloadURL());
         values.put(COLUMN_CLIP_EXTENSION, information.getExtension());
         values.put(COLUMN_LINK, information.getLink());
+        values.put(COLUMN_SOURCE, information.getSource());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_DOWNLOAD_LIST, null, values);
         db.close();

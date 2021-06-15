@@ -56,7 +56,7 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.8.0')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-firestore:11.8.0'
+    implementation 'com.google.firebase:firebase-firestore:23.0.1'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:26.8.0')
@@ -87,7 +87,9 @@ dependencies {
 
     //players
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
-    implementation 'com.google.apis:google-api-services-youtube:v3-rev181-1.22.0'
+    implementation ('com.google.apis:google-api-services-youtube:v3-rev181-1.22.0') {
+        exclude group:'com.google.guava'
+    }
 
     //extractor
     implementation 'com.github.Ashusolanki:FacebookUrlExtractor:0.0.5'
@@ -101,8 +103,10 @@ dependencies {
     implementation 'pub.devrel:easypermissions:0.3.0'
     implementation('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
+        exclude group:'com.google.guava'
     }
     implementation('com.google.apis:google-api-services-youtube:v3-rev183-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
+        exclude group:'com.google.guava'
     }
 }

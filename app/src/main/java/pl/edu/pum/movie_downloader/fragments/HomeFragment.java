@@ -28,8 +28,8 @@ import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.adapters.AvailableSourcesRecyclerViewAdapter;
 import pl.edu.pum.movie_downloader.alerts.Alerts;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
-import pl.edu.pum.movie_downloader.database.local.DBHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.database.local.sqlite.DBHandler;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
 public class HomeFragment extends Fragment {

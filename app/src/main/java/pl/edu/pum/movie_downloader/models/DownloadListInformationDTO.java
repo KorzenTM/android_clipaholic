@@ -1,6 +1,6 @@
 package pl.edu.pum.movie_downloader.models;
 
-public class DownloadListInformation {
+public class DownloadListInformationDTO {
     private final String mLink;
     private final String mTitle;
     private final String mFormat;
@@ -8,9 +8,10 @@ public class DownloadListInformation {
     private final String mDownloadURL;
     private final String mExtension;
     private final int mITag;
+    private final String mSource;
 
-    public DownloadListInformation(String Title, String Format, String ID, int ITAG,
-                                   String downloadURL, String ext, String link ) {
+    public DownloadListInformationDTO(String Title, String Format, String ID, int ITAG,
+                                      String downloadURL, String ext, String link, String source ) {
         this.mTitle = Title;
         this.mFormat = Format;
         this.mID = ID;
@@ -18,7 +19,10 @@ public class DownloadListInformation {
         this.mDownloadURL = downloadURL;
         this.mExtension = ext;
         this.mLink = link;
+        this.mSource = source;
     }
+
+    public String getSource() {return mSource;}
 
     public String getLink() {return mLink;}
 

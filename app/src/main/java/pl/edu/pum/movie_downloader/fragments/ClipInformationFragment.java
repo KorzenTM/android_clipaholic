@@ -39,23 +39,27 @@ import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.services.youtube.model.Video;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.data.vimeo.VimeoDataAPI;
 import pl.edu.pum.movie_downloader.data.youtube.YouTubeDataAPI;
-import pl.edu.pum.movie_downloader.database.local.DBHandler;
 import pl.edu.pum.movie_downloader.data.youtube.YouTubeFormatAPI;
+import pl.edu.pum.movie_downloader.database.local.firestore.FirestoreDBHandler;
+import pl.edu.pum.movie_downloader.database.local.sqlite.DBHandler;
 import pl.edu.pum.movie_downloader.downloader.Downloader;
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 import pl.edu.pum.movie_downloader.players.youtube.YouTubePlayer;
 import pl.edu.pum.movie_downloader.viemodel.PageViewModel;
@@ -201,8 +205,7 @@ public class ClipInformationFragment extends Fragment {
                         itag = mQualityRadioGroup.getCheckedRadioButtonId();
                         url = mYouTubeFormatAPI.getDownloadURL(itag);
                         ext = mYouTubeFormatAPI.getExtension(itag);
-                        addToList(title, format, id, itag, url, ext, mLink);
-                        testAddToFirestore(title, format, id, itag, url, ext, mLink);
+                        addToList(title, format, id, itag, url, ext, mLink, "youtube");
                     }
                 }
                 else if(isVimeoURL(mLink)){
@@ -213,7 +216,7 @@ public class ClipInformationFragment extends Fragment {
                         itag = mQualityRadioGroup.getCheckedRadioButtonId();
                         url = mVimeoDataAPI.getStreamsMap().get(mQualityRadioGroup.getCheckedRadioButtonId() + "p");
                         ext = "mp4";
-                        addToList(title, format, id, itag, url, ext, mLink);
+                        addToList(title, format, id, itag, url, ext, mLink, "vimeo");
                     }else {
                         Snackbar.make(requireView(), "Failed to get the correct data. Please try again.", Snackbar.LENGTH_SHORT).show();
                     }
@@ -234,18 +237,26 @@ public class ClipInformationFragment extends Fragment {
                 Snackbar.make(requireView(), "You have to choose download format.", Snackbar.LENGTH_SHORT).show();
             }else{
                 if (!mLink.isEmpty()) {
-                    int key = mQualityRadioGroup.getCheckedRadioButtonId();
                     Downloader downloader = new Downloader(requireContext());
+                    FirestoreDBHandler firestoreDBHandler = new FirestoreDBHandler();
+                    int key = mQualityRadioGroup.getCheckedRadioButtonId();
+                    int selectedFormat = mQualityRadioGroup.getCheckedRadioButtonId();
+                    RadioButton radioButton = view.findViewById(selectedFormat);
+                    String userName = Objects.requireNonNull(FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser()).getDisplayName();
+                    String currentDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now());
                     if (isYouTubeUrl(mLink) && mYouTubeFormatAPI != null) {
                         String title = mTargetVideo.getSnippet().getTitle().replaceAll("[^a-zA-Z0-9]", " ");
                         String url = mYouTubeFormatAPI.getDownloadURL(key);
-                        System.out.println(url + " " + title);
+                        String format = radioButton.getText().toString();
+                        firestoreDBHandler.add(userName, UUID.randomUUID().toString(), title, format, currentDate, "youtube");
                         downloader.downloadFromUrl(url, title);
                     }
                     else if (isVimeoURL(mLink) && mVimeoDataAPI != null) {
                         String vimeoKey = key + "p";
                         String title = mVimeoDataAPI.getTitle();
+                        String format = radioButton.getText().toString();
                         String url = mVimeoDataAPI.getStreamsMap().get(vimeoKey);
+                        firestoreDBHandler.add(userName, UUID.randomUUID().toString(), title, format, currentDate, "vimeo");
                         downloader.downloadFromUrl(url, title);
                     }
                     else {
@@ -258,10 +269,6 @@ public class ClipInformationFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private void testAddToFirestore(String title, String format, String id, int itag, String url, String ext, String mLink) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
     }
 
     private void resetData() {
@@ -298,16 +305,16 @@ public class ClipInformationFragment extends Fragment {
     }
 
     private void addToList(String title, String format, String ID, int ITag,
-                           String downloadURL, String ext, String link){
-        DownloadListInformation downloadListInformation =
-                new DownloadListInformation(title, format, ID,
-                        ITag, downloadURL, ext, link);
+                           String downloadURL, String ext, String link, String source){
+        DownloadListInformationDTO downloadListInformationDTO =
+                new DownloadListInformationDTO(title, format, ID,
+                        ITag, downloadURL, ext, link, source);
         Handler handler = new Handler();
         Runnable task = () -> {
             if (DownloadListFragment.dbHandler == null){
                 DownloadListFragment.dbHandler = new DBHandler(requireContext());
             }
-            DownloadListFragment.dbHandler.addNewClipToList(downloadListInformation);
+            DownloadListFragment.dbHandler.addNewClipToList(downloadListInformationDTO);
             DownloadListFragment.getDownloadList();
             handler.post(() -> {
                 View download_list_view = NavHostActivity.mBottomNavigationView.findViewById(R.id.download_list_fragment);
@@ -452,9 +459,9 @@ public class ClipInformationFragment extends Fragment {
     }
 
     private void initYouTube() {
+        getFormatsFromYouTubeUrl();
         setUpYouTubePlayer();
         getInformationAboutYouTubeClipFromURL();
-        getFormatsFromYouTubeUrl();
     }
 
     private void setUpYouTubePlayer(){
@@ -462,10 +469,8 @@ public class ClipInformationFragment extends Fragment {
         YouTubePlayer.youTubePlayerView.setVisibility(View.VISIBLE);
         if (mYouTubePlayer == null){
             mYouTubePlayer = new YouTubePlayer(mLink, getLifecycle());
-            mYouTubePlayer.init();
             mYouTubePlayer.setClipID(mLink);
-            Runnable task1 = () -> mYouTubePlayer.setNextVideo();
-            new Thread(task1).start();
+            mYouTubePlayer.init();
         }else {
             mYouTubePlayer.setClipID(mLink);
             Runnable task2 = () -> mYouTubePlayer.setNextVideo();

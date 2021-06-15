@@ -1,4 +1,4 @@
-package pl.edu.pum.movie_downloader.database;
+package pl.edu.pum.movie_downloader.FirebaseAuthentication;
 
 import android.util.Log;
 
@@ -7,10 +7,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-import pl.edu.pum.movie_downloader.models.User;
+import pl.edu.pum.movie_downloader.models.UserDTO;
 
 public final class FireBaseAuthHandler {
     private static FireBaseAuthHandler instance;
@@ -42,6 +44,9 @@ public final class FireBaseAuthHandler {
 
                 if (Objects.requireNonNull(user).isEmailVerified()) {
                     Log.d("User login status", "The user has logged in");
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    CollectionReference collectionReference = db.collection(user.getDisplayName());
+                    collectionReference.add("test");
                     fireBaseAuthState.isOperationSuccessfully("SUCCESS_LOGIN");
                 } else {
                     fireBaseAuthState.isOperationSuccessfully("NO_EMAIL_VERIFIED");
@@ -63,14 +68,14 @@ public final class FireBaseAuthHandler {
     }
 
     public void createNewUser(String nickname, String email, String password, FireBaseAuthState fireBaseAuthState) {
-        User newUser = new User(nickname, email, password);
-        mAuth.createUserWithEmailAndPassword(newUser.getUserEmail(),
-                newUser.getUserPassword()).
+        UserDTO newUserDTO = new UserDTO(nickname, email, password);
+        mAuth.createUserWithEmailAndPassword(newUserDTO.getUserEmail(),
+                newUserDTO.getUserPassword()).
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         sendActivationEmailToUser(Objects.requireNonNull(user));
-                        setDisplayNameForNewUser(newUser.getUserNickname(), user);
+                        setDisplayNameForNewUser(newUserDTO.getUserNickname(), user);
                         fireBaseAuthState.isOperationSuccessfully("NEW_USER_CREATED");
                         logOutUserAccount();
                         Log.d("User register status", "New account registration successful");
@@ -113,7 +118,7 @@ public final class FireBaseAuthHandler {
         });
     }
 
-    public void signWithGoogleAccount(String idToken, FireBaseAuthState fireBaseAuthState) {
+    public void signWithGoogleAccount(String idToken, String userName, FireBaseAuthState fireBaseAuthState) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
 
         mAuth.signInWithCredential(credential)

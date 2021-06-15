@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import pl.edu.pum.movie_downloader.R;
-import pl.edu.pum.movie_downloader.database.FireBaseAuthHandler;
+import pl.edu.pum.movie_downloader.FirebaseAuthentication.FireBaseAuthHandler;
 import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
 import pl.edu.pum.movie_downloader.navigation_drawer.DrawerLocker;
 
@@ -117,8 +117,8 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     private void setBottomMenuItemActions() {
         NavOptions options = new NavOptions.Builder()
                 .setLaunchSingleTop(true)
-                .setEnterAnim(R.anim.fragment_fade_enter)
-                .setExitAnim(R.anim.fragment_fade_exit)
+                .setEnterAnim(R.anim.nav_default_enter_anim)
+                .setExitAnim(R.anim.nav_default_exit_anim)
                 .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
                 .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
                 .build();
@@ -168,8 +168,8 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         NavOptions options = new NavOptions.Builder()
                 .setLaunchSingleTop(true)
-                .setEnterAnim(R.anim.fragment_fade_enter)
-                .setExitAnim(R.anim.fragment_fade_exit)
+                .setEnterAnim(R.anim.nav_default_enter_anim)
+                .setExitAnim(R.anim.nav_default_exit_anim)
                 .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
                 .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
                 .build();

@@ -19,22 +19,22 @@ import pl.edu.pum.movie_downloader.R;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.downloader.Downloader;
 import pl.edu.pum.movie_downloader.fragments.DownloadListFragment;
-import pl.edu.pum.movie_downloader.models.DownloadListInformation;
+import pl.edu.pum.movie_downloader.models.DownloadListInformationDTO;
 
 public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<DownloadListRecyclerViewAdapter.ViewHolder> {
     public interface OnButtonClickListener{
-        void onItemCheck(DownloadListInformation downloadListInformation);
-        void onItemUncheck(DownloadListInformation downloadListInformation);
+        void onItemCheck(DownloadListInformationDTO downloadListInformationDTO);
+        void onItemUncheck(DownloadListInformationDTO downloadListInformationDTO);
     }
 
     private final FragmentActivity mContext;
-    public final List<DownloadListInformation> mClipInformationList;
+    public static List<DownloadListInformationDTO> mClipInformationList;
     public static boolean isSelectable = false;
     OnButtonClickListener onButtonClickListeners;
 
-    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<DownloadListInformation> clipInformationList) {
+    public DownloadListRecyclerViewAdapter ( FragmentActivity context, List<DownloadListInformationDTO> clipInformationList) {
         this.mContext = context;
-        this.mClipInformationList = clipInformationList;
+        mClipInformationList = clipInformationList;
     }
 
     public void setOnButtonClickListeners(OnButtonClickListener listener){
@@ -50,7 +50,7 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DownloadListInformation information = mClipInformationList.get(position);
+        DownloadListInformationDTO information = mClipInformationList.get(position);
         final String format = information.getFormat();
         String title = information.getTitle();
         if (title.length() > 10){
@@ -86,7 +86,7 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
 
             mDownloadCheckbox = itemView.findViewById(R.id.download_checkbox);
             mDownloadCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
                 if (isChecked){
                     itemView.setBackgroundColor(Color.LTGRAY);
                     itemView.setBackgroundResource(R.drawable.selected_recycler_view_background);
@@ -105,7 +105,7 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
             });
 
             mDeleteButton.setOnClickListener(v -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
                 mClipInformationList.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
                 notifyItemRangeChanged(getAdapterPosition(), mClipInformationList.size() - 1);
@@ -120,7 +120,7 @@ public class DownloadListRecyclerViewAdapter extends RecyclerView.Adapter<Downlo
             });
 
             mDownloadButton.setOnClickListener(v -> {
-                DownloadListInformation information = mClipInformationList.get(getAdapterPosition());
+                DownloadListInformationDTO information = mClipInformationList.get(getAdapterPosition());
                 Downloader downloader = new Downloader(mContext);
                 String downloadURL = information.getDownloadURL();
                 System.out.println(downloadURL);

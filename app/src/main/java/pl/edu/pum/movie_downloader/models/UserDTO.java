@@ -1,12 +1,12 @@
 package pl.edu.pum.movie_downloader.models;
 
-public class User
+public class UserDTO
 {
     private String mUserNickname;
     private String mUserEmail;
     private String mUserPassword;
 
-    public User(String nickname, String email, String password)
+    public UserDTO(String nickname, String email, String password)
     {
         this.mUserNickname = nickname;
         this.mUserEmail = email;

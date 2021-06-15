@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class YouTubePlayer {
-    public static YouTubePlayerView youTubePlayerView = null;
+    public static YouTubePlayerView youTubePlayerView;
     private final Lifecycle mLifecycle;
     private String mYouTubeID;
     private com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer mYouTubePlayer;
