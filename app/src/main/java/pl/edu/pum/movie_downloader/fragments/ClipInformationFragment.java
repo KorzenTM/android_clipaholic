@@ -266,7 +266,7 @@ public class ClipInformationFragment extends Fragment {
 
     private void resetData() {
         mYouTubeFormatAPI = null;
-        mVimeoDataAPI = null;n
+        mVimeoDataAPI = null;
 
         if (YouTubePlayer.youTubePlayerView != null){
             YouTubePlayer.youTubePlayerView.setVisibility(View.GONE);
