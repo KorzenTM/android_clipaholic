@@ -20,7 +20,7 @@ public class DownloadHistoryFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Navigation.findNavController(requireView()).navigate(R.id.home_fragment);
+                Navigation.findNavController(requireView()).navigate(R.id.action_download_history_fragment_to_home_fragment);
             }
         });
     }

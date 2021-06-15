@@ -1,4 +1,4 @@
-package pl.edu.pum.movie_downloader.downloader.YouTubeURL;
+package pl.edu.pum.movie_downloader.data.youtube;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,31 +15,31 @@ import at.huber.youtubeExtractor.YtFile;
 import pl.edu.pum.movie_downloader.activities.NavHostActivity;
 import pl.edu.pum.movie_downloader.downloader.Downloader;
 
-public class YouTubeDownloadURL extends Downloader{
-    private static String mLink;
+public class YouTubeFormatAPI extends Downloader{
     private final Context mContext;
-    private static SparseArray<YtFile> mYTFiles;
-    private static VideoMeta mMeta;
-    private final static List<RadioButton> mRadioButtonsList = new ArrayList<>();
+    private String mLink;
+    private SparseArray<YtFile> mYTFiles;
+    private VideoMeta mMeta;
+    private final List<RadioButton> mRadioButtonsList = new ArrayList<>();
 
-    public YouTubeDownloadURL(Context context, String link){
+    public YouTubeFormatAPI(Context context, String link){
         super(context);
+        mContext = context;
         mLink = link;
-        this.mContext = context;
     }
 
-    public static String getLink() {
+    public  String getLink() {
         return mLink;
     }
 
-    public static void extract(YouTubeDownloadUrlState youTubeDownloadUrlState){
+    public void extract(YouTubeAPIState youTubeAPIState){
         mRadioButtonsList.clear();
-        YouTubeExtractor youTubeExtractor = new YouTubeExtractor(NavHostActivity.getContext()) {
+        @SuppressLint("StaticFieldLeak") YouTubeExtractor youTubeExtractor = new YouTubeExtractor(NavHostActivity.getContext()) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
                 if (ytFiles == null) {
-                    youTubeDownloadUrlState.isOperationSuccessfully("NO_SUCCESS");
+                    youTubeAPIState.isOperationSuccessfully("NO_SUCCESS");
                     return;
                 }
                 mYTFiles = ytFiles;
@@ -51,13 +51,12 @@ public class YouTubeDownloadURL extends Downloader{
                 for (int i = 0; i < ytFiles.size(); i++) {
                     itag = ytFiles.keyAt(i);
                     Format format = ytFiles.get(ytFiles.keyAt(i)).getFormat();
-                    System.out.println(format.toString());
                     materialExtension = format.getExt();
                     videoHeight = format.getHeight();
                     audioBitrate = format.getAudioBitrate();
+
                     newButton = new RadioButton(NavHostActivity.getContext());
                     newButton.setId(itag);
-
                     if (videoHeight > 0) {
                         newButton.setText(("Video " + materialExtension + " " + videoHeight + "p"));
                     } else {
@@ -65,13 +64,13 @@ public class YouTubeDownloadURL extends Downloader{
                     }
                     mRadioButtonsList.add(newButton);
                 }
-                youTubeDownloadUrlState.isOperationSuccessfully("SUCCESS");
+                youTubeAPIState.isOperationSuccessfully("SUCCESS");
             }
         };
         youTubeExtractor.extract(mLink, true, false);
     }
 
-    public List<RadioButton> getRadioButtonsList() {return this.mRadioButtonsList;}
+    public List<RadioButton> getRadioButtonsList() {return mRadioButtonsList;}
 
     public String getDownloadURL(int ITAG){
         return mYTFiles.get(ITAG).getUrl();
@@ -79,19 +78,5 @@ public class YouTubeDownloadURL extends Downloader{
 
     public String getExtension(int ITag){
         return  mYTFiles.get(ITag).getFormat().getExt();
-    }
-
-    public void downloadVideoFromITag(int iTag){
-        YtFile ytFile = mYTFiles.get(iTag);
-        String downloadURL = ytFile.getUrl();
-        String videoTitle = mMeta.getTitle();
-        String extension = ytFile.getFormat().getExt();
-        String filename = createFilename(videoTitle, extension);
-        downloadFromUrl(downloadURL, videoTitle, filename);
-    }
-
-    public void downloadVideoFromURL(String URL, String title, String extension){
-        String filename = createFilename(title, extension);
-        downloadFromUrl(URL, title, filename);
     }
 }

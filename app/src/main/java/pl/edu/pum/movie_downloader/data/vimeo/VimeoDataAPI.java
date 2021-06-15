@@ -17,7 +17,7 @@ import vimeoextractor.VimeoVideo;
 
 public class VimeoDataAPI extends Downloader {
     private final Context mContext;
-    private String mLink;
+    private final String mLink;
     private String mTitle;
     private String mAuthor;
     private String mURLToPlay;
@@ -43,11 +43,11 @@ public class VimeoDataAPI extends Downloader {
                 RadioButton newButton;
                 for (Map.Entry<String, String> entry : mStreamsMap.entrySet()){
                     String quality = entry.getKey();
+                    mURLToPlay = entry.getValue();
                     newButton = new RadioButton(mContext);
                     newButton.setId(Integer.parseInt(quality.replace("p", "")));
                     newButton.setText("Video " + quality);
                     mRadioButtonsList.add(newButton);
-                    mURLToPlay = entry.getValue();
                 }
                 vimeoDataAPIState.isOperationSuccessfully("SUCCESS");
             }
@@ -58,11 +58,6 @@ public class VimeoDataAPI extends Downloader {
                 Log.d("VIMEO", "VIMEO_STATUS:", throwable);
             }
         });
-    }
-
-    public void download(String URL){
-        String filename = createFilename(mTitle, "mp4");
-        downloadFromUrl(URL, mTitle, filename);
     }
 
     public String getTitle(){

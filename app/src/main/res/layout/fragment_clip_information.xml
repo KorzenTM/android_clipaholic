@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_baseline_search_24"
                     android:layout_margin="5sp"
-                    android:backgroundTint="#2E8B57"
+                    android:backgroundTint="@color/button_background"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/check_link" />
 
@@ -101,6 +101,7 @@
                 android:layout_margin="10sp"
                 android:background="@drawable/layout_rounded_background"
                 android:visibility="gone"
+                android:animateLayoutChanges="true"
                 tools:visibility="visible"
                 >
 
@@ -112,7 +113,7 @@
                     android:textAlignment="center"
                     android:layout_margin="5sp"
                     android:textSize="18sp"
-                    android:text="Is that what you had in mind?"
+                    android:text="We found something! \nIs that what you had in mind?"
                     android:textStyle="bold"
                     android:textColor="@color/text_color"/>
 
@@ -122,6 +123,7 @@
                     android:layout_margin="5sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
 
                     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
                         android:id="@+id/youtube_player_view"
@@ -156,8 +158,30 @@
                     android:textSize="15sp"
                     android:textColor="@color/text_color"/>
 
-                <View
+                <ImageButton
+                    android:id="@+id/show_title_Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    android:layout_below="@id/player_view"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="TODO" />
+
+                <TextView
                     android:layout_below="@id/title_header"
+                    android:layout_margin="5sp"
+                    android:id="@+id/title_text_view"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_below="@id/title_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_margin="5sp"
@@ -166,17 +190,6 @@
 
                 <TextView
                     android:layout_below="@id/line1"
-                    android:layout_margin="5sp"
-                    android:id="@+id/title_text_view"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_below="@id/title_text_view"
                     android:layout_margin="5sp"
                     android:id="@+id/view_counter_header"
                     android:layout_width="wrap_content"
@@ -187,8 +200,30 @@
                     android:textSize="15sp"
                     android:textColor="@color/text_color"/>
 
-                <View
+                <ImageButton
+                    android:id="@+id/show_views_Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    android:layout_below="@id/line1"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="TODO" />
+
+                <TextView
                     android:layout_below="@id/view_counter_header"
+                    android:layout_margin="5sp"
+                    android:id="@+id/view_counter_text_view"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_below="@id/view_counter_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_margin="5sp"
@@ -197,17 +232,6 @@
 
                 <TextView
                     android:layout_below="@id/line2"
-                    android:layout_margin="5sp"
-                    android:id="@+id/view_counter_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_below="@id/view_counter_text_view"
                     android:layout_margin="5sp"
                     android:id="@+id/description_header"
                     android:layout_width="wrap_content"
@@ -218,20 +242,23 @@
                     android:textSize="15sp"
                     android:textColor="@color/text_color"/>
 
-                <View
-                    android:layout_below="@id/description_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_margin="5sp"
-                    android:id="@+id/line3"
-                    android:background="@color/black"/>
+                <ImageButton
+                    android:id="@+id/show_description_Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    android:layout_below="@id/line2"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="TODO" />
 
                 <TextView
-                    android:layout_below="@id/line3"
+                    android:layout_below="@id/description_header"
                     android:layout_margin="5sp"
                     android:id="@+id/description_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="14sp" />
@@ -241,7 +268,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_margin="5sp"
-                    android:id="@+id/line"
+                    android:id="@+id/line3"
                     android:background="@color/black"/>
 
                 <TextView
@@ -249,18 +276,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_below="@id/line"
+                    android:layout_below="@id/line3"
                     android:layout_margin="5sp"
                     android:text="Choose quality"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_color"/>
 
+                <ImageButton
+                    android:id="@+id/show_formats_Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    android:layout_below="@id/line3"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="TODO" />
+
                 <RadioGroup
                     android:id="@+id/quality_radio_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
+                    android:visibility="gone"
                     android:layout_below="@id/format_choose_placeholder"/>
 
                 <View
@@ -277,6 +315,7 @@
                     android:layout_centerHorizontal="true"
                     android:backgroundTint="@color/button_background"
                     android:layout_width="wrap_content"
+                    android:textColor="@color/white"
                     android:layout_margin="5sp"
                     android:textSize="14sp"
                     android:layout_height="wrap_content"
@@ -284,7 +323,5 @@
 
             </RelativeLayout>
         </RelativeLayout>
-
     </androidx.core.widget.NestedScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

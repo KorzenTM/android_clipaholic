@@ -142,13 +142,6 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
-        FirebaseUser firebaseUser = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
-
-        if (firebaseUser != null && firebaseUser.isEmailVerified())
-        {
-            Navigation.findNavController(view).navigate(R.id.action_logFragment_to_home_fragment);
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")

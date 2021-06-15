@@ -9,26 +9,33 @@
         android:id="@+id/logFragment"
         tools:layout="@layout/fragment_login"
         android:name="pl.edu.pum.movie_downloader.fragments.LoginFragment"
-        android:label="Clipaholic" >
+        android:label="Clipaholic">
+        <action
+            android:id="@+id/action_logFragment"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:destination="@id/logFragment"/>
         <action
             android:id="@+id/action_logFragment_to_registerFragment"
             app:destination="@id/registerFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_logFragment_to_home_fragment"
             app:destination="@id/home_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/right_to_left"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_logFragment_to_reset_fragment"
             app:destination="@id/reset_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/down_to_up"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
@@ -40,8 +47,8 @@
         <action
             android:id="@+id/action_registerFragment_to_logFragment"
             app:destination="@id/logFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/down_to_up"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
@@ -53,17 +60,17 @@
         <action
             android:id="@+id/action_home_fragment_to_logFragment"
             app:destination="@id/logFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/right_to_left"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_home_fragment_to_clip_information_fragment"
             app:destination="@id/clip_information_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/right_to_left"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/reset_fragment"
@@ -73,10 +80,10 @@
         <action
             android:id="@+id/action_reset_fragment_to_logFragment"
             app:destination="@id/logFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -84,19 +91,34 @@
         android:name="pl.edu.pum.movie_downloader.fragments.ClipInformationFragment"
         android:label="Clipaholic"
         tools:layout="@layout/fragment_clip_information">
+        <argument
+            android:name="link"
+            app:argType="string"
+            android:defaultValue=""/>
+        <action
+            android:id="@+id/action_information"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:destination="@id/clip_information_fragment"/>
         <action
             android:id="@+id/action_clip_information_fragment_to_home_fragment"
             app:destination="@id/home_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_clip_information_fragment_to_logFragment"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_clip_information_fragment_to_download_list_fragment"
-            app:destination="@id/download_list_fragment" />
+            app:destination="@id/download_list_fragment"
+            app:enterAnim="@anim/right_to_left"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -105,11 +127,32 @@
         android:label="@string/app_name"
         tools:layout="@layout/fragment_download_list">
         <action
+            android:id="@+id/action_downloadList"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:destination="@id/download_list_fragment"/>
+        <action
             android:id="@+id/action_download_list_fragment_to_logFragment"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_download_list_fragment_to_home_fragment"
-            app:destination="@id/home_fragment" />
+            app:destination="@id/home_fragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_download_list_fragment_to_clip_information_fragment"
+            app:destination="@id/clip_information_fragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_download_list_fragment_to_download_history_fragment"
+            app:destination="@id/download_history_fragment"
+            app:enterAnim="@anim/right_to_left"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -118,11 +161,32 @@
         android:label="@string/app_name"
         tools:layout="@layout/fragment_download_history">
         <action
+            android:id="@+id/action_downloadHistory"
+            app:enterAnim="@anim/up_to_down"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:destination="@id/download_history_fragment"/>
+        <action
             android:id="@+id/action_download_history_fragment_to_logFragment"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_download_history_fragment_to_home_fragment"
-            app:destination="@id/home_fragment" />
+            app:destination="@id/home_fragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_download_history_fragment_to_download_list_fragment"
+            app:destination="@id/download_list_fragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_download_history_fragment_to_clip_information_fragment"
+            app:destination="@id/clip_information_fragment"
+            app:enterAnim="@anim/left_to_right"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
 

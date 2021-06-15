@@ -26,19 +26,18 @@ public class Downloader {
         return filename;
     }
 
-    public void downloadFromUrl(String Url, String downloadTitle, String fileName) {
-        View rootView = ((Activity)mContext).getWindow().getDecorView().findViewById(android.R.id.content);
-        Snackbar.make(rootView, "Download has been started.", Snackbar.LENGTH_SHORT).show();
+    public void downloadFromUrl(String Url, String downloadTitle) {
         Uri uri = Uri.parse(Url);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(downloadTitle);
-
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
-
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadTitle);
         DownloadManager manager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
         assert manager != null;
         manager.enqueue(request);
+
+        View rootView = ((Activity)mContext).getWindow().getDecorView().findViewById(android.R.id.content);
+        Snackbar.make(rootView, "Download has been started.", Snackbar.LENGTH_SHORT).show();
     }
 }

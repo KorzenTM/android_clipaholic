@@ -40,7 +40,9 @@
     <string name="download">DOWNLOAD</string>
     <string name="put_the_link_here">Put the link here:</string>
     <string name="please_wait">Please wait…</string>
-    <string name="format">Format:</string>
+    <string name="format">Format</string>
     <string name="go_to_the_next_section">Go to the next section</string>
     <string name="check_link">Check link</string>
+    <string name="thumbnail">Thumbnail</string>
+    <string name="forgot_your_password"><u>Forgot your password?</u></string>
 </resources>

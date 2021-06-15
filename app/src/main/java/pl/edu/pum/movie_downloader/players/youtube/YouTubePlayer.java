@@ -25,7 +25,6 @@ public class YouTubePlayer {
 
         this.mYouTubeID = getYouTubeId(URL);
         this.mLifecycle = lifecycle;
-        mLifecycle.addObserver(youTubePlayerView);
     }
 
     public String getClipID()
@@ -49,13 +48,13 @@ public class YouTubePlayer {
     }
 
     public void init() {
+        mLifecycle.addObserver(youTubePlayerView);
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NotNull com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer youTubePlayer) {
                 super.onReady(youTubePlayer);
                 mYouTubePlayer = youTubePlayer;
                 YouTubePlayerUtils.loadOrCueVideo(youTubePlayer, mLifecycle, mYouTubeID, 0f);
-                youTubePlayer.pause();
             }
 
             @Override

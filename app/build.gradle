@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -49,10 +51,12 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.8.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore:11.8.0'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:26.8.0')

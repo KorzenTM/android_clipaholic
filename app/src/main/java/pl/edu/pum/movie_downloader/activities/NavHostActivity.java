@@ -3,6 +3,7 @@ package pl.edu.pum.movie_downloader.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -77,6 +79,21 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
                 1);
 
         NavHostActivity.context = getApplicationContext();
+
+        FirebaseUser firebaseUser = FireBaseAuthHandler.getInstance().getAuthorization().getCurrentUser();
+        if (firebaseUser != null && firebaseUser.isEmailVerified())
+        {
+            Bundle extras = getIntent().getExtras();
+            if (extras!= null){
+                String link = extras.getString(Intent.EXTRA_TEXT);
+                Log.d("LINK", link);
+                Bundle bundle = new Bundle();
+                bundle.putString("link", link);
+                navController.navigate(R.id.clip_information_fragment, bundle);
+            }else{
+                navController.navigate(R.id.home_fragment);
+            }
+        }
     }
 
     public static Context getContext() {
@@ -98,16 +115,23 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomMenuItemActions() {
+        NavOptions options = new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setEnterAnim(R.anim.fragment_fade_enter)
+                .setExitAnim(R.anim.fragment_fade_exit)
+                .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
+                .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
+                .build();
         mBottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.clip_information_fragment:
-                    navController.navigate(R.id.clip_information_fragment);
+                    navController.navigate(R.id.clip_information_fragment, null, options);
                     break;
                 case R.id.download_list_fragment:
-                    navController.navigate(R.id.download_list_fragment);
+                    navController.navigate(R.id.download_list_fragment, null, options);
                     break;
                 case R.id.download_history_fragment:
-                    navController.navigate(R.id.download_history_fragment);
+                    navController.navigate(R.id.download_history_fragment, null, options);
                     break;
             }
             return true;
@@ -142,6 +166,13 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        NavOptions options = new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setEnterAnim(R.anim.fragment_fade_enter)
+                .setExitAnim(R.anim.fragment_fade_exit)
+                .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
+                .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
+                .build();
         switch (item.getItemId()) {
             case R.id.profile_item:
                 Toast.makeText(this, "User profile", Toast.LENGTH_LONG).show();
@@ -149,7 +180,7 @@ public class NavHostActivity extends AppCompatActivity implements NavigationView
             case R.id.log_out_item:
                 FireBaseAuthHandler fireBaseAuthHandler = FireBaseAuthHandler.getInstance();
                 fireBaseAuthHandler.logOutUserAccount();
-                navController.navigate(R.id.logFragment);
+                navController.navigate(R.id.logFragment, null, options);
                 View parentLayout = findViewById(android.R.id.content);
                 Snackbar.make(parentLayout, "Successfully logged out. See you later!", Snackbar.LENGTH_SHORT).show();
                 break;

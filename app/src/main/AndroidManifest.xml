@@ -21,14 +21,19 @@
             android:name=".activities.NavHostActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/activity" />
+            android:theme="@style/activity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="www.youtube.com" android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -19,10 +19,10 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_TITLE = "clip_title";
     public static final String COLUMN_CLIP_ID = "clip_id";
     public static final String COLUMN_FORMAT = "format";
-    public static final String COLUMN_YT_ITAG = "yt_iTag";
-    public static final String COLUMN_YT_DOWNLOAD_LINK = "yt_download_link";
-    public static final String COLUMN_YT_CLIP_EXTENSION= "yt_clip_extension";
-    public static final String COLUMN_YT_LINK = "yt_link";
+    public static final String COLUMN_YT_ITAG = "yt_iTag"; //for youtube clips
+    public static final String COLUMN_DOWNLOAD_LINK = "download_url";
+    public static final String COLUMN_CLIP_EXTENSION = "yt_clip_extension";
+    public static final String COLUMN_LINK = "yt_link";
 
 
     public DBHandler(@Nullable Context context) {
@@ -44,11 +44,11 @@ public class DBHandler extends SQLiteOpenHelper {
                 " TEXT," +
                 COLUMN_YT_ITAG +
                 " INTEGER," +
-                COLUMN_YT_DOWNLOAD_LINK +
+                COLUMN_DOWNLOAD_LINK +
                 " TEXT," +
-                COLUMN_YT_CLIP_EXTENSION +
+                COLUMN_CLIP_EXTENSION +
                 " TEXT," +
-                COLUMN_YT_LINK +
+                COLUMN_LINK +
                 " TEXT" +
                 ")";
         db.execSQL(CREATE_DOWNLOAD_LIST_TABLE);
@@ -66,21 +66,21 @@ public class DBHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
-    public void addYouTubeClip(DownloadListInformation information){
+    public void addNewClipToList(DownloadListInformation information){
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, information.getTitle());
         values.put(COLUMN_CLIP_ID, information.getID());
         values.put(COLUMN_FORMAT, information.getFormat());
         values.put(COLUMN_YT_ITAG, information.getITag());
-        values.put(COLUMN_YT_DOWNLOAD_LINK, information.getDownloadURL());
-        values.put(COLUMN_YT_CLIP_EXTENSION, information.getExtension());
-        values.put(COLUMN_YT_LINK, information.getLink());
+        values.put(COLUMN_DOWNLOAD_LINK, information.getDownloadURL());
+        values.put(COLUMN_CLIP_EXTENSION, information.getExtension());
+        values.put(COLUMN_LINK, information.getLink());
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_DOWNLOAD_LIST, null, values);
         db.close();
     }
 
-    public void deleteYouTubeClip(String title, int itag){
+    public void deleteClipFromList(String title, int itag){
         String query = "Select * FROM " +
                 TABLE_DOWNLOAD_LIST +
                 " WHERE " +
